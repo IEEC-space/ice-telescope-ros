@@ -1,0 +1,566 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<!-- Manual page created with latex2man on Fri Sep 25 15:14:12 CEST 2015
+** Author of latex2man: Juergen.Vollmer@informatik-vollmer.de
+** NOTE: This file is generated, DO NOT EDIT. -->
+<html>
+<head><title>ROS-TELESCOPE</title>
+</head><body bgcolor="white">
+<h1 align=center>
+ICE Telescope -<br>
+ A ROS package 
+</h1>
+<h4 align=center>Biel Artigues Aguilo </h4>
+<h4 align=center>2015/09/22</h4>
+<h4 align=center>Version 0.1</h4>
+<p>
+<tt>ice_telescope</tt>
+is a ROS package to operate and remote control the telescope system at the ICE building in the UAB Campus. The full system is composed of a Meade LX200GPS telescope, an SBIG ST-7 CCD camera and a Baader Planetarium dome. 
+<h3>Table of Contents</h3>
+<ul>
+<li><a href="#section_1">Synopsis </a></li>
+<li><a href="#section_2">Description </a></li>
+<li><a href="#section_3">Servers </a></li>
+<li><a href="#section_4">Telescope client </a>
+<ul>
+<li><a href="#section_5">Options </a></li>
+</ul>
+<li><a href="#section_6">CCD client </a>
+<ul>
+<li><a href="#section_7">Options </a></li>
+</ul>
+<li><a href="#section_8">Dome client </a>
+<ul>
+<li><a href="#section_9">Options </a></li>
+</ul>
+<li><a href="#section_10">Files </a></li>
+<li><a href="#section_11">Example </a></li>
+<li><a href="#section_12">See Also </a></li>
+<li><a href="#section_13">Requirements </a></li>
+<li><a href="#section_14">Changes </a></li>
+<li><a href="#section_15">Version </a></li>
+<li><a href="#section_16">License and Copyright </a></li>
+<li><a href="#section_17">Author </a></li>
+</ul>
+<p>
+<h2><a name="section_1">Synopsis</a></h2>
+
+<p>
+<strong>ROS</strong>
+<p>
+<tt>roscore</tt>
+<p>
+<strong>Server</strong>
+<p>
+<tt>rosrun</tt>
+<tt>ice_telescope</tt>
+<tt>ice_telescope_node</tt>
+<p>
+<strong>Client</strong>
+<p>
+<tt>rosrun</tt>
+<tt>ice_telescope</tt>
+<tt>ice_telescope_node</tt>
+<i>action</i>
+[<b>params</b>]
+<p>
+<h2><a name="section_2">Description</a></h2>
+
+<tt>ice_telescope</tt>
+is composed of several nodes --<tt>ice_telescope_node</tt>--
+that allow the control of the telescope system. Each of the system components (telescope, dome, ccd) has a pair of client--server nodes following the naming convention <tt>brand_server</tt>
+and <tt>brand_client</tt>:
+<dl compact>
+<dt><b>Telescope</b>
+</dt>
+<dd> <tt>meade_server</tt>
+and <tt>meade_client</tt>.
+</dd>
+<dt><b>CCD</b>
+</dt>
+<dd> <tt>sbig_server</tt>
+and <tt>sbig_client</tt>.
+</dd>
+<dt><b>Dome</b>
+</dt>
+<dd> <tt>baader_server</tt>
+and <tt>baader_client</tt>.
+</dd>
+</dl>
+<p>
+The server node runs continuously waiting for petitions from the client node. When a client node's petition is received by the server node, the server processes the petition, sends a response back to the client and returns to the waiting mode. The client waits for the server response and finishes the execution. <br>
+
+<p>
+<strong>Client node</strong>
+<p>
+The <b>action</b>
+parameter issues the desired order to the server. 
+<p>
+[<b>params</b>]
+will depend on the system component and the selected <b>action</b>.
+<br>
+<p>
+<strong>Note:</strong>
+<tt>roscore</tt>
+must be running at all times for node communication and interoperation. 
+<p>
+<h2><a name="section_3">Servers</a></h2>
+
+<p>
+The servers for all the system elements are executed without additional parameters and they must be running to listen to the clients commands. <br>
+
+<p>
+<strong>Telescope</strong>
+<p>
+<tt>rosrun</tt>
+<tt>ice_telescope</tt>
+<tt>meade_server</tt>
+<p>
+<strong>CCD</strong>
+<p>
+<tt>rosrun</tt>
+<tt>ice_telescope</tt>
+<tt>sbig_server</tt>
+<p>
+<strong>Dome</strong>
+<p>
+<tt>rosrun</tt>
+<tt>ice_telescope</tt>
+<tt>baader_server</tt>
+<p>
+<h2><a name="section_4">Telescope client</a></h2>
+
+<p>
+The telescope client issues the user's desired actions to perform with the Meade LX200GPS Telescope. <br>
+
+<p>
+<tt>rosrun</tt>
+<tt>ice_telescope</tt>
+<tt>meade_client</tt>
+<i>action</i>
+[<b>params</b>]
+<p>
+<tt>rosrun</tt>
+<tt>ice_telescope</tt>
+<tt>meade_client.py</tt>
+<i>action</i>
+[<b>params</b>]
+<p>
+<h4><a name="section_5">Options</a></h4>
+
+<p>
+The <i>action</i>
+parameter is the command to be sent to the server. The <i>action</i>
+can be one of the following: 
+<p>
+<dl compact>
+<dt><i>goto</i>
+</dt>
+<dd> Point the telescope to the specified coordinates. 
+<p>
+<tt>rosrun</tt>
+<tt>ice_telescope</tt>
+<tt>meade_client</tt> <i>goto</i>
+<i>ra</i>
+<i>dec</i>
+<p>
+<ul compact>
+<li><b>ra</b> Right ascension as a double value.
+</li>
+<li><b>dec</b> Declination as a double value.
+</li>
+</ul>
+<p>
+</dd>
+<dt><i>messier</i>
+</dt>
+<dd> Point the telescope to the selected catalog object. 
+<p>
+</dd>
+<dt><i>star</i>
+</dt>
+<dd> <tt>rosrun</tt>
+<tt>ice_telescope</tt>
+<tt>meade_client</tt> <i>messier</i>
+<i>objectNum</i>
+<p>
+</dd>
+<dt><i>deepsky</i>
+</dt>
+<dd> <tt>rosrun</tt>
+<tt>ice_telescope</tt>
+<tt>meade_client</tt> <i>star</i>
+<i>objectNum</i>
+<p>
+<tt>rosrun</tt>
+<tt>ice_telescope</tt>
+<tt>meade_client</tt> <i>deepsky</i>
+<i>objectNum</i>
+<p>
+<ul compact>
+<li><b>objectNum</b> The catalog number for the desired object.
+</li>
+</ul>
+<p>
+</dd>
+<dt><i>gps</i>
+</dt>
+<dd> Update the system's gps. <strong>Note:</strong>
+The dome must be open for the gps sync. 
+<p>
+<tt>rosrun</tt>
+<tt>ice_telescope</tt>
+<tt>meade_client</tt> <i>gps</i>
+<p>
+</dd>
+<dt><i>getobjradec</i>
+</dt>
+<dd> Get the coordinates of the currently selected object. 
+<p>
+<tt>rosrun</tt>
+<tt>ice_telescope</tt>
+<tt>meade_client</tt> <i>getobjradec</i>
+<p>
+</dd>
+<dt><i>gettelradec</i>
+</dt>
+<dd> Get the telescope's current pointing coordinates. 
+<p>
+<tt>rosrun</tt>
+<tt>ice_telescope</tt>
+<tt>meade_client</tt> <i>gettelradec</i>
+<p>
+</dd>
+<dt><i>getdatetime</i>
+</dt>
+<dd> Get the telescope's current date and time. 
+<p>
+<tt>rosrun</tt>
+<tt>ice_telescope</tt>
+<tt>meade_client</tt> <i>getdatetime</i>
+<p>
+</dd>
+<dt><i>setdatetime</i>
+</dt>
+<dd> Set the telescope's date and time to the current ones. 
+<p>
+<tt>rosrun</tt>
+<tt>ice_telescope</tt>
+<tt>meade_client</tt> <i>setdatetime</i>
+<p>
+</dd>
+<dt><i>focus</i>
+</dt>
+<dd> Move the telescope's focus (in/out). WORK IN PROGRESS. 
+<p>
+</dd>
+</dl>
+<p>
+<h2><a name="section_6">CCD client</a></h2>
+
+<p>
+The CCD client issues the user's desired actions to perform with the SBIG ST-7 CCD. <br>
+
+<p>
+<tt>rosrun</tt>
+<tt>ice_telescope</tt>
+<tt>sbig_client</tt>
+<i>action</i>
+[<b>params</b>]
+<p>
+<tt>rosrun</tt>
+<tt>ice_telescope</tt>
+<tt>sbig_client.py</tt>
+<i>action</i>
+[<b>params</b>]
+<p>
+<h4><a name="section_7">Options</a></h4>
+
+<p>
+The <i>action</i>
+parameter is the command to be sent to the server. The <i>action</i>
+can be one of the following: 
+<p>
+<dl compact>
+<dt><i>capture</i>
+</dt>
+<dd> Start an exposure and save the result to file. 
+<p>
+<tt>rosrun</tt>
+<tt>ice_telescope</tt>
+<tt>sbig_client</tt>
+<i>capture</i>
+<i>filePath</i>
+<i>fileType</i>
+<i>imgCount</i>
+<i>imgType</i>
+<i>expTime</i>
+<i>readoutMode</i>
+<i>top</i>
+<i>left</i>
+<i>width</i>
+<i>height</i>
+<i>fastReadout</i>
+<i>dualReadoutChannel</i>
+<p>
+<ul compact>
+<li><b>filePath</b>: The path for the saved image files.
+</li>
+<li><b>fileType</b>: FITS or SBIG file formats.
+</li>
+<li><b>imgCount</b>: Number of exposures to take.
+</li>
+<li><b>imgType</b>: LF (light frame) or DF (dark frame).
+</li>
+<li><b>expTime</b>: Number of seconds (or fraction of second) of exposure.
+</li>
+<li><b>readoutMode</b>: Binning. Options: 1x1, 2x2, 3x3.
+</li>
+<li><b>top</b>: Starting position in the 'Y' axis.
+</li>
+<li><b>left</b>: Starting position in the 'X' axis.
+</li>
+<li><b>width</b>: Image width in pixels.
+</li>
+<li><b>height</b>: Image height in pixels. <br>
+
+<p>
+<strong>Note:</strong>
+If all params (top, left, width and height) are zero, the full size of the CCD image is used. <br>
+
+<p>
+</li>
+<li><b>fastReadout</b>: 1 for fast readout and 0 for normal readout.
+</li>
+<li><b>dualReadoutChannel</b>: 1 for dual channel readout an 0 for single channel readout.
+</li>
+</ul>
+<p>
+</dd>
+<dt><i>settemp</i>
+</dt>
+<dd> Enable or disable the cooler to achieve the desired temperature for the CCD. 
+<p>
+<tt>rosrun</tt>
+<tt>ice_telescope</tt>
+<tt>sbig_client</tt>
+<i>settemp</i>
+<i>enable</i>
+<i>temperature</i>
+<p>
+<ul compact>
+<li><b>enable</b>: 1 to enable and 0 to disable.
+</li>
+<li><b>temperature</b>: double value with the desired temperature
+</li>
+</ul>
+<p>
+</dd>
+<dt><i>gettemp</i>
+</dt>
+<dd> Query the CCD temperature. The server returns the temperature, the power applied to the CCD as a percentage (0-1) and the cooler status (enabled/disabled). 
+<p>
+<tt>rosrun</tt>
+<tt>ice_telescope</tt>
+<tt>sbig_client</tt>
+<i>gettemp</i>
+<p>
+</dd>
+</dl>
+<p>
+<h2><a name="section_8">Dome client</a></h2>
+
+<p>
+The dome client issues the user's desired actions to perform with the Baader Planetarium Dome. <br>
+
+<p>
+<tt>rosrun</tt>
+<tt>ice_telescope</tt>
+<tt>baader_client</tt>
+<i>action</i>
+<p>
+<tt>rosrun</tt>
+<tt>ice_telescope</tt>
+<tt>baader_client.py</tt>
+<i>action</i>
+<p>
+<h4><a name="section_9">Options</a></h4>
+
+<p>
+The <i>action</i>
+parameter is the command to be sent to the server. The <i>action</i>
+can be one of the following: 
+<p>
+<dl compact>
+<dt><i>open</i>
+</dt>
+<dd> Open the dome. 
+<p>
+<tt>rosrun</tt>
+<tt>ice_telescope</tt>
+<tt>baader_client</tt>
+<i>open</i>
+<p>
+</dd>
+<dt><i>close</i>
+</dt>
+<dd> Close the dome. 
+<p>
+<tt>rosrun</tt>
+<tt>ice_telescope</tt>
+<tt>baader_client</tt>
+<i>close</i>
+<p>
+</dd>
+<dt><i>status</i>
+</dt>
+<dd> Query the dome status. The possible states for the dome are: open, closed, moving and unknown. 
+<p>
+<tt>rosrun</tt>
+<tt>ice_telescope</tt>
+<tt>baader_client</tt>
+<i>status</i>
+<p>
+</dd>
+</dl>
+<p>
+<h2><a name="section_10">Files</a></h2>
+
+<p>
+<dl compact>
+<dt><tt>meade_server</tt>
+</dt>
+<dd> C++ implementation of the telescope server. 
+</dd>
+<dt><tt>meade_client</tt>
+</dt>
+<dd> C++ implementation of the telescope client. 
+</dd>
+<dt><tt>meade_client.py</tt>
+</dt>
+<dd> Python implementation for the telescope client. 
+</dd>
+<dt><tt>sbig_server</tt>
+</dt>
+<dd> C++ implementation of the CCD server. 
+</dd>
+<dt><tt>sbig_client</tt>
+</dt>
+<dd> C++ implementation of the CCD client. 
+</dd>
+<dt><tt>sbig_client.py</tt>
+</dt>
+<dd> Python implementation for the CCD client. 
+</dd>
+<dt><tt>baader_server</tt>
+</dt>
+<dd> C++ implementation of the dome server. 
+</dd>
+<dt><tt>baader_client</tt>
+</dt>
+<dd> C++ implementation of the dome client. 
+</dd>
+<dt><tt>baader_client.py</tt>
+</dt>
+<dd> Python implementation for the dome client. 
+</dd>
+</dl>
+<p>
+<h2><a name="section_11">Example</a></h2>
+
+<p>
+<tt>$roscore &amp;</tt>
+<br><br>
+<br>
+
+<tt>$rosrun ice_telescope baader_server &amp;</tt>
+<br>
+<tt>$rosrun ice_telescope sbig_server &amp;</tt>
+<br>
+<tt>$rosrun ice_telescope meade_server &amp;</tt>
+<br><br>
+<br>
+
+<tt>$rosrun ice_telescope baader_client open</tt>
+<br>
+<tt>$rosrun ice_telescope sbig_client settemp 1 10.0</tt>
+<br>
+<tt>$rosrun ice_telescope meade_client gps</tt>
+<br>
+<tt>$rosrun ice_telescope meade_client setdatetime</tt>
+<br>
+<tt>$rosrun ice_telescope meade_client messier 31</tt>
+<br>
+<tt>$rosrun ice_telescope sbig_client capture /img/ FITS 10 LF 30.0 1x1 0 0 0 0 1 1</tt>
+<br>
+<tt>$rosrun ice_telescope baader_client close</tt>
+<p>
+<h2><a name="section_12">See Also</a></h2>
+
+<p>
+ROS, <tt>rosrun</tt>,
+<tt>roscd</tt>,
+<tt>rosls</tt>,
+<tt>catkin_make</tt>.
+<p>
+<h2><a name="section_13">Requirements</a></h2>
+
+<p>
+<dl compact>
+<dt>ROS Environment</dt>
+<dd> <tt>ice_telescope</tt>
+requires ROS version &gt;= 1.11.13 (&gt;= Indigo distribution). 
+</dd>
+<dt>ROS Workspace</dt>
+<dd> If you want to compile or install the distributed system, you need a <tt>catkin</tt>
+workspace. 
+</dd>
+</dl>
+<p>
+<h2><a name="section_14">Changes</a></h2>
+
+Please check the file <a href ="CHANGES"><tt>CHANGES</tt></a>
+for the list of changes and 
+acknowledgment to people contributing bugfixes or enhancements. 
+<p>
+<h2><a name="section_15">Version</a></h2>
+
+<p>
+Version: 0.1 of 2015/09/22.
+<p>
+<h2><a name="section_16">License and Copyright</a></h2>
+
+<p>
+<dl compact>
+<dt>Copyright</dt>
+<dd> &copy; 2015, Biel Artigues Aguilo, 
+ICE Building, Campus UAB, Bellaterra, Catalunya<br>
+
+<a href ="mailto:artigues@ice.cat"><tt>artigues@ice.cat</tt></a>
+<p>
+The actual version of <tt>ice_telescope</tt>
+may be found on the following link<br>
+
+<a href ="http://www.ice.csic.es/"><tt>http://www.ice.csic.es/</tt></a>.
+<p>
+</dd>
+<dt>License</dt>
+<dd> This program is free software: you can redistribute it and/or modify 
+it under the terms of the GNU General Public License as published by 
+the Free Software Foundation, either version 3 of the License, or 
+(at your option) any later version. 
+<p>
+</dd>
+</dl>
+<p>
+<h2><a name="section_17">Author</a></h2>
+
+<p>
+Biel Artigues Aguilo <br>
+
+Email: <a href ="mailto:artigues@ice.cat"><tt>artigues@ice.cat</tt></a>
+<br>
+WWW: <a href ="http://www.ice.csic.es/"><tt>http://www.ice.csic.es/</tt></a>.
+<p>
+</body>
+</html>
+<!-- NOTE: This file is generated, DO NOT EDIT. -->

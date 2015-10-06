@@ -1,0 +1,18 @@
+string sbig_action
+string file_path
+bool fits_file
+uint16 img_count
+bool lf_img
+float32 exp_time
+uint8 readout_mode
+int16 top
+int16 left
+int16 width
+int16 height
+bool fast_readout
+bool dual_readout_channel
+float32 temperature
+bool temp_enable
+---
+string sbig_response
+bool sbig_error

@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>ice_telescope</name>
+  <version>0.1.0</version>
+  <description>The ICE Telescope ROS package</description>
+
+  <maintainer email="artigues@ice.cat">Biel Artigues Aguilo</maintainer>
+  <license>GPLv3</license>
+  <url type="website">http://www.ice.csic.es</url>
+  <!-- <url type="website">http://wiki.ros.org/ice_telescope</url> -->
+
+  <author email="artigues@ice.cat">Biel Artigues Aguilo</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <depend>roscpp</depend>
+  <depend>rospy</depend>
+  <depend>std_msgs</depend>
+
+  <build_depend>message_generation</build_depend>
+  <exec_depend>message_runtime</exec_depend>
+
+</package>

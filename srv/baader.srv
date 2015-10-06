@@ -1,0 +1,4 @@
+string baader_action
+---
+string baader_response
+bool baader_error
