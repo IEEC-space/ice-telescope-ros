@@ -12,11 +12,8 @@ Baader Planetarium dome.
 -   [Description](#description)
 -   [Servers](#servers)
 -   [Telescope client](#telescope-client)
-    -   [Options](#options)
 -   [CCD client](#ccd-client)
-    -   [Options](#options)
 -   [Dome client](#dome-client)
-    -   [Options](#options)
 -   [Files](#files)
 -   [Example](#example)
 -   [See Also](#see-also)
@@ -98,7 +95,7 @@ the Meade LX200GPS Telescope.
     rosrun ice_telescope meade_client action [params]
     rosrun ice_telescope meade_client.py action [params]
 
-#### Options
+### Options
 
 The **action** parameter is the command to be sent to the server. The
 **action** can be one of the following:
@@ -166,7 +163,7 @@ SBIG ST-7 CCD.
     rosrun ice_telescope sbig_client action [params]
     rosrun ice_telescope sbig_client.py action [params]
 
-#### Options
+### Options
 
 The **action** parameter is the command to be sent to the server. The
 **action** can be one of the following:
@@ -221,7 +218,7 @@ Baader Planetarium Dome.
     rosrun ice_telescope baader_client action
     rosrun ice_telescope baader_client.py action
 
-#### Options
+### Options
 
 The **action** parameter is the command to be sent to the server. The
 **action** can be one of the following:
