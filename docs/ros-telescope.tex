@@ -1,0 +1,359 @@
+% !TEX encoding = UTF-8 Unicode
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Project:     ROS ICE Telescope
+%% Descr:       ROS ice_telescope package  MAN-page
+%% Author:      Biel Artigues Aguilo, artigues@ice.cat
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[a4paper,english]{article}
+\usepackage{a4wide}
+\usepackage[latin1]{inputenc}
+\usepackage{babel}
+\usepackage{verbatim}
+\usepackage{listings}
+
+%% do we have the `hyperref package?
+\IfFileExists{hyperref.sty}{
+   \usepackage[bookmarksopen,bookmarksnumbered]{hyperref}
+}{}
+
+%% do we have the `fancyhdr' package?
+\IfFileExists{fancyhdr.sty}{
+\usepackage[fancyhdr]{ros-telescope}
+}{
+%% do we have the `fancyheadings' package?
+\IfFileExists{fancyheadings.sty}{
+\usepackage[fancy]{ros-telescope}
+}{
+\usepackage[nofancy]{ros-telescope}
+\message{no fancyhdr or fancyheadings package present, discard it}
+}}
+
+%% do we have the `rcsinfo' package?
+\IfFileExists{rcsinfo.sty}{
+\usepackage[nofancy]{rcsinfo}
+\setDate{\rcsInfoLongDate}
+}{
+\setDate{2015/09/22}    %%%% must be manually set, if rcsinfo is not present
+\message{package rcsinfo not present, discard it}
+}
+
+\setVersionWord{Version:}  %%% that's the default, no need to set it.
+\setVersion{0.1}
+
+\begin{document}
+
+\begin{Name}{1}{ros-telescope}{Biel Artigues Aguilo}{ICE Telescope}{ICE Telescope\\--\\ A ROS package}
+
+  \Prog{ice\_telescope} is a ROS package to operate and remote control the telescope system at the ICE building in the UAB Campus. The full system is composed of a Meade LX200GPS telescope, an SBIG ST-7 CCD camera and a Baader Planetarium dome. 
+  \end{Name}
+
+\section{Synopsis}
+%%%%%%%%%%%%%%%%%%
+
+\textbf{ROS}
+
+\Prog{roscore} 
+
+\noindent
+\textbf{Server}
+
+\Prog{rosrun} \Prog{ice\_telescope} \Prog{ice\_telescope\_node}
+
+\noindent
+\textbf{Client}
+
+\Prog{rosrun} \Prog{ice\_telescope} \Prog{ice\_telescope\_node} \Arg{action} \oOpt{params} 
+
+\section{Description}
+%%%%%%%%%%%%%%%%%%%%%
+\Prog{ice\_telescope} is composed of several nodes --\Prog{ice\_telescope\_node}-- that allow the control of the telescope system. Each of the system components (telescope, dome, ccd) has a pair of client--server nodes following the naming convention \Prog{brand\_server} and \Prog{brand\_client}: 
+\begin{Description}[\Opt{Telescope}]\setlength{\itemsep}{0cm}
+\item[\Opt{Telescope}] \Prog{meade\_server} and \Prog{meade\_client}.
+\item[\Opt{CCD}] \Prog{sbig\_server} and \Prog{sbig\_client}.
+\item[\Opt{Dome}] \Prog{baader\_server} and \Prog{baader\_client}.
+\end{Description}
+
+The server node runs continuously waiting for petitions from the client node. When a client node's petition is received by the server node, the server processes the petition, sends a response back to the client and returns to the waiting mode. The client waits for the server response and finishes the execution. \\
+
+\noindent
+\textbf{Client node}
+
+The \Opt{action} parameter issues the desired order to the server.
+
+\oOpt{params} will depend on the system component and the selected \Opt{action}. \\
+
+\noindent
+\textbf{Note:} \Prog{roscore} must be running at all times for node communication and interoperation.
+
+
+\section{Servers}
+%%%%%%%%%%%%%%%%%
+
+The servers for all the system elements are executed without additional parameters and they must be running to listen to the clients commands. \\
+
+\noindent
+\textbf{Telescope}
+
+\Prog{rosrun} \Prog{ice\_telescope} \Prog{meade\_server}
+
+\noindent
+\textbf{CCD}
+
+\Prog{rosrun} \Prog{ice\_telescope} \Prog{sbig\_server}
+
+\noindent
+\textbf{Dome}
+
+\Prog{rosrun} \Prog{ice\_telescope} \Prog{baader\_server}
+
+
+\section{Telescope client}
+%%%%%%%%%%%%%%%%%
+
+The telescope client issues the user's desired actions to perform with the Meade LX200GPS Telescope. \\
+
+\Prog{rosrun} \Prog{ice\_telescope} \Prog{meade\_client} \Arg{action} \oOpt{params} 
+
+\Prog{rosrun} \Prog{ice\_telescope} \Prog{meade\_client.py} \Arg{action} \oOpt{params} 
+
+
+\subsection{Options}
+%%%%%%%%%%%%%%%%%
+
+The \Arg{action} parameter is the command to be sent to the server. The \Arg{action} can be one of the following:
+
+\begin{Description}[\Arg{getdatetime}]\setlength{\itemsep}{0cm}
+\item[\Arg{goto}] Point the telescope to the specified coordinates.
+
+	\Prog{rosrun} \Prog{ice\_telescope} \Prog{meade\_client} \Arg{goto} \Arg{ra} \Arg{dec}
+	
+	\begin{itemize}
+		\item \Opt{ra} Right ascension as a double value.
+		\item \Opt{dec} Declination as a double value.
+	\end{itemize}
+	
+\item[\Arg{messier}] Point the telescope to the selected catalog object.
+
+\item[\Arg{star}]	\Prog{rosrun} \Prog{ice\_telescope} \Prog{meade\_client} \Arg{messier} \Arg{objectNum}
+	
+\item[\Arg{deepsky}]	\Prog{rosrun} \Prog{ice\_telescope} \Prog{meade\_client} \Arg{star} \Arg{objectNum}
+	
+	\Prog{rosrun} \Prog{ice\_telescope} \Prog{meade\_client} \Arg{deepsky} \Arg{objectNum}
+	
+	\begin{itemize}
+		\item \Opt{objectNum} The catalog number for the desired object.
+	\end{itemize}
+	
+\item[\Arg{gps}] Update the system's gps. \textbf{Note:} The dome must be open for the gps sync.
+
+	\Prog{rosrun} \Prog{ice\_telescope} \Prog{meade\_client} \Arg{gps}
+	
+\item[\Arg{getobjradec}] Get the coordinates of the currently selected object.
+
+	\Prog{rosrun} \Prog{ice\_telescope} \Prog{meade\_client} \Arg{getobjradec}
+	
+\item[\Arg{gettelradec}] Get the telescope's current pointing coordinates.
+
+	\Prog{rosrun} \Prog{ice\_telescope} \Prog{meade\_client} \Arg{gettelradec}
+	
+\item[\Arg{getdatetime}] Get the telescope's current date and time.
+
+	\Prog{rosrun} \Prog{ice\_telescope} \Prog{meade\_client} \Arg{getdatetime}
+	
+\item[\Arg{setdatetime}] Set the telescope's date and time to the current ones.
+
+	\Prog{rosrun} \Prog{ice\_telescope} \Prog{meade\_client} \Arg{setdatetime}
+	
+\item[\Arg{getlatlon}] Get the telescope's latitude and longitude.
+
+	\Prog{rosrun} \Prog{ice\_telescope} \Prog{meade\_client} \Arg{getlatlon}
+	
+\item[\Arg{setlatlon}] Set the telescope's latitude and longitude.
+
+	\Prog{rosrun} \Prog{ice\_telescope} \Prog{meade\_client} \Arg{setlatlon} \Arg{lat} \Arg{lon}
+	
+	\begin{itemize}
+		\item \Opt{lat} The current latitude as a double value.
+		\item \Opt{lon} The current longitude as a double value.
+	\end{itemize}
+	
+\item[\Arg{focus}] Move the telescope's focus (in/out). WORK IN PROGRESS.
+	
+\end{Description}
+
+
+\section{CCD client}
+%%%%%%%%%%%%%%%%%
+
+The CCD client issues the user's desired actions to perform with the SBIG ST-7 CCD. \\
+
+\Prog{rosrun} \Prog{ice\_telescope} \Prog{sbig\_client} \Arg{action} \oOpt{params} 
+
+\Prog{rosrun} \Prog{ice\_telescope} \Prog{sbig\_client.py} \Arg{action} \oOpt{params} 
+
+
+\subsection{Options}
+%%%%%%%%%%%%%%%%%
+
+The \Arg{action} parameter is the command to be sent to the server. The \Arg{action} can be one of the following:
+
+\begin{Description}[\Arg{gettemp}]\setlength{\itemsep}{0cm}
+\item[\Arg{capture}] Start an exposure and save the result to file.
+
+	\Prog{rosrun} \Prog{ice\_telescope} \Prog{sbig\_client} \Arg{capture} \Arg{filePath} \Arg{fileType} \Arg{imgCount} \Arg{imgType} \Arg{expTime} \Arg{readoutMode} \Arg{top} \Arg{left} \Arg{width} \Arg{height} \Arg{fastReadout} \Arg{dualReadoutChannel}   
+	
+	\begin{itemize}
+		\item \Opt{filePath}: The path for the saved image files.
+		\item \Opt{fileType}: FITS or SBIG file formats.
+		\item \Opt{imgCount}: Number of exposures to take.
+		\item \Opt{imgType}: LF (light frame) or DF (dark frame).
+		\item \Opt{expTime}: Number of seconds (or fraction of second) of exposure.
+		\item \Opt{readoutMode}: Binning. Options: 1x1, 2x2, 3x3.
+		\item \Opt{top}: Starting position in the 'Y' axis.
+		\item \Opt{left}: Starting position in the 'X' axis.
+		\item \Opt{width}: Image width in pixels.
+		\item \Opt{height}: Image height in pixels. \\
+		
+		\textbf{Note:} If all params (top, left, width and height) are zero, the full size of the CCD image is used. \\
+		
+		\item \Opt{fastReadout}: 1 for fast readout and 0 for normal readout.
+		\item \Opt{dualReadoutChannel}: 1 for dual channel readout an 0 for single channel readout.
+	\end{itemize}
+	
+\item[\Arg{settemp}] Enable or disable the cooler to achieve the desired temperature for the CCD. 
+
+	\Prog{rosrun} \Prog{ice\_telescope} \Prog{sbig\_client} \Arg{settemp} \Arg{enable} \Arg{temperature} 
+	
+	\begin{itemize}
+		\item \Opt{enable}: 1 to enable and 0 to disable.
+		\item \Opt{temperature}: double value with the desired temperature
+	\end{itemize}
+	
+\item[\Arg{gettemp}] Query the CCD temperature. The server returns the temperature, the power applied to the CCD as a percentage (0-1) and the cooler status (enabled/disabled).
+
+	\Prog{rosrun} \Prog{ice\_telescope} \Prog{sbig\_client} \Arg{gettemp}
+	
+\end{Description}
+
+
+\section{Dome client}
+%%%%%%%%%%%%%%%%%
+
+The dome client issues the user's desired actions to perform with the Baader Planetarium Dome. \\
+
+\Prog{rosrun} \Prog{ice\_telescope} \Prog{baader\_client} \Arg{action}
+
+\Prog{rosrun} \Prog{ice\_telescope} \Prog{baader\_client.py} \Arg{action}
+
+
+\subsection{Options}
+%%%%%%%%%%%%%%%%%
+
+The \Arg{action} parameter is the command to be sent to the server. The \Arg{action} can be one of the following:
+
+\begin{Description}[\Arg{action}]\setlength{\itemsep}{0cm}
+\item[\Arg{open}] Open the dome. 
+
+	\Prog{rosrun} \Prog{ice\_telescope} \Prog{baader\_client} \Arg{open}
+	
+\item[\Arg{close}] Close the dome.
+
+	\Prog{rosrun} \Prog{ice\_telescope} \Prog{baader\_client} \Arg{close}
+	
+\item[\Arg{status}] Query the dome status. The possible states for the dome are: open, closed, moving and unknown.
+
+	\Prog{rosrun} \Prog{ice\_telescope} \Prog{baader\_client} \Arg{status}
+	
+\end{Description}
+
+
+\section{Files}
+%%%%%%%%%%%%%%%%%
+
+\begin{Description}[\File{baader\_client.py}]\setlength{\itemsep}{0cm}
+\item[\File{meade\_server}] C++ implementation of the telescope server.
+\item[\File{meade\_client}] C++ implementation of the telescope client.
+\item[\File{meade\_client.py}] Python implementation for the telescope client.
+\item[\File{sbig\_server}] C++ implementation of the CCD server.
+\item[\File{sbig\_client}] C++ implementation of the CCD client.
+\item[\File{sbig\_client.py}] Python implementation for the CCD client.
+\item[\File{baader\_server}] C++ implementation of the dome server.
+\item[\File{baader\_client}] C++ implementation of the dome client.
+\item[\File{baader\_client.py}] Python implementation for the dome client.
+\end{Description}
+
+
+\section{Example}
+%%%%%%%%%%%%%%%%%%
+
+\begin{lstlisting}[language=bash, frame=single, breaklines=true]
+$ roscore &
+
+$ rosrun ice_telescope baader_server &
+$ rosrun ice_telescope sbig_server &
+$ rosrun ice_telescope meade_server &
+
+$ rosrun ice_telescope baader_client open
+$ rosrun ice_telescope sbig_client settemp 1 10.0
+$ rosrun ice_telescope meade_client gps
+$ rosrun ice_telescope meade_client setdatetime
+$ rosrun ice_telescope meade_client messier 31
+$ rosrun ice_telescope sbig_client capture /img/ FITS 10 LF 30.0 1x1 0 0 0 0 1 1
+$ rosrun ice_telescope baader_client close
+\end{lstlisting}
+
+
+\section{See Also}
+%%%%%%%%%%%%%%%%%%
+
+ROS, \Prog{rosrun}, \Prog{roscd}, \Prog{rosls}, \Prog{catkin\_make}.
+
+
+\section{Requirements}
+%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{description}\setlength{\itemsep}{0cm}
+\item[ROS Environment] \Prog{ice\_telescope} requires ROS version $>=$ 1.11.13 ($>=$ Indigo distribution).
+\item[ROS Workspace] If you want to compile or install the distributed system, you need a \Prog{catkin} workspace. 
+\end{description}
+
+\section{Changes}
+Please check the file \URL{CHANGES} for the list of changes and
+acknowledgment to people contributing bugfixes or enhancements.
+
+\section{Version}
+%%%%%%%%%%%%%%%%%
+
+Version: \Version\ of \Date.
+
+\section{License and Copyright}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{description}
+\item[Copyright] \copyright\ 2015, Biel Artigues Aguilo,
+     ICE Building, Campus UAB, Bellaterra, Catalunya\\
+     \Email{artigues@ice.cat}
+
+
+     The actual version of  \Prog{ice\_telescope} may be found on the following link\\
+     \URL{http://www.ice.csic.es/}. %% LINK TO BE UPDATED
+
+\item[License] This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+\end{description}
+
+\section{Author}
+%%%%%%%%%%%%%%%%
+
+\noindent
+Biel Artigues Aguilo                      \\
+Email: \Email{artigues@ice.cat}  \\
+WWW: \URL{http://www.ice.csic.es/}.
+
+\LatexManEnd
+
+\end{document}
