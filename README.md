@@ -150,6 +150,21 @@ Set the telescope's date and time to the current ones.
 
     rosrun ice_telescope meade_client setdatetime
 
+**getlatlon**
+
+Get the telescope's latitude and longitude.
+
+    rosrun ice_telescope meade_client getlatlon
+
+**setlatlon**
+
+Set the telescope's latitude and longitude.
+
+    rosrun ice_telescope meade_client setlatlon lat lon
+
+        -   lat: The current latitude as a double value.
+        -   lon: The current longitude as a double value.
+
 **focus**
 
 Move the telescope's focus (in/out). WORK IN PROGRESS.
