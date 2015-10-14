@@ -21,7 +21,7 @@ import rospy
 from ice_telescope.srv import *
 
 def usage_general():
-    rospy.loginfo("Usage: meade_client action [action arguments]. Action: goto; messier; star; deepsky; focus; gps; getobjradec; gettelradec; getdatetime; setdatetime")
+    rospy.loginfo("Usage: meade_client action [action arguments]. Action: goto; messier; star; deepsky; focus; gps; getobjradec; gettelradec; getdatetime; setdatetime; setlatlon; getlatlon")
 
 def usage_goto():
     rospy.loginfo("Usage: meade_client goto ra dec")
@@ -35,11 +35,15 @@ def usage_focus():
     rospy.loginfo("Usage: meade_client focus motion[in/out]")
     rospy.loginfo("Example: meade_client focus in")
 
-def meade_action_client(action, ra, dec, object_num, focus_motion):
+def usage_latlon():
+    rospy.loginfo("Usage: meade_client setlatlon latitude longitude")
+    rospy.loginfo("Example: meade_client setlatlon 41.385 2.173")
+
+def meade_action_client(action, ra, dec, object_num, focus_motion, lat, lon):
     rospy.wait_for_service('meade_action')
     try:
         srv = rospy.ServiceProxy('meade_action', meade)
-        resp = srv(action, ra, dec, object_num, focus_motion)
+        resp = srv(action, ra, dec, object_num, focus_motion, lat, lon)
         return resp
     except rospy.ServiceException, e:
         rospy.logerr("Service call failed: %s", e)
@@ -61,6 +65,8 @@ if __name__ == "__main__":
         dec = float(sys.argv[3])
         object_num = None
         focus_motion = None
+        lat = None
+        lon = None
 
     elif action == "messier" or action == "star" or action == "deepsky":
         if len(sys.argv) != 3:
@@ -71,6 +77,8 @@ if __name__ == "__main__":
         dec = None
         object_num = int(sys.argv[2])
         focus_motion = None
+        lat = None
+        lon = None
 
     elif action == "focus":
         if len(sys.argv) != 3:
@@ -81,15 +89,31 @@ if __name__ == "__main__":
         dec = None
         object_num = None
         focus_motion = str(sys.argv[2])
+        lat = None
+        lon = None
+
+    elif action == "setlatlon":
+        if len(sys.argv) != 4:
+            usage_latlon()
+            sys.exit(1)
+
+        ra = None
+        dec = None
+        object_num = None
+        focus_motion = None
+        lat = float(sys.argv[2])
+        lon = float(sys.argv[3])
 
     else:
         ra = None
         dec = None
         object_num = None
         focus_motion = None
+        lat = None
+        lon = None
 
     
-    resp = meade_action_client(action, ra, dec, object_num, focus_motion)
+    resp = meade_action_client(action, ra, dec, object_num, focus_motion, lat, lon)
     if resp.meade_error:
         rospy.logerr("%s", resp.meade_response)
         sys.exit(1)

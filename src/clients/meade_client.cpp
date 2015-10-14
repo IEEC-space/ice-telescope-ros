@@ -22,7 +22,7 @@
 
 void usage_general()
 {
-  ROS_INFO("Usage: meade_client action [action arguments]. Action: goto; messier; star; deepsky; focus; gps; getobjradec; gettelradec; getdatetime; setdatetime");
+  ROS_INFO("Usage: meade_client action [action arguments]. Action: goto; messier; star; deepsky; focus; gps; getobjradec; gettelradec; getdatetime; setdatetime; setlatlon; getlatlon");
 }
 
 void usage_goto()
@@ -41,6 +41,12 @@ void usage_focus()
 {
   ROS_INFO("Usage: meade_client focus motion[in/out]");
   ROS_INFO("Example: meade_client focus in");
+}
+
+void usage_latlon()
+{
+  ROS_INFO("Usage: meade_client setlatlon latitude longitude");
+  ROS_INFO("Example: meade_client setlatlon 41.385 2.173");
 }
 
 int main(int argc, char **argv)
@@ -89,6 +95,17 @@ int main(int argc, char **argv)
     }
 
     srv.request.focus_motion = argv[2];
+  }
+  else if(srv.request.meade_action == "setlatlon")
+  {
+    if(argc != 4)
+    {
+      usage_latlon();
+      return 1;
+    }
+
+    srv.request.lat = atof(argv[2]);
+    srv.request.lon = atof(argv[3]);
   }
 
   if(client.call(srv))

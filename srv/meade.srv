@@ -3,6 +3,8 @@ float64 ra
 float64 dec
 int16 object_num
 string focus_motion
+float64 lat
+float64 lon
 ---
 string meade_response
 bool meade_error

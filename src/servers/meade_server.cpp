@@ -128,6 +128,39 @@ bool meade_action(ice_telescope::meade::Request  &req,
         meade_output(res, "Error setting telescope's date and time", true);
       }
     }
+    else if(req.meade_action == "getlatlon")
+    {
+      int dd, mm;
+      int ddd, mmm;
+
+      ROS_INFO("Telescope request: %s", req.meade_action.c_str());
+
+      if(getSiteLatitude(portFD, &dd, &mm) == 0 && getSiteLongitude(portFD, &ddd, &mmm) == 0)
+      {
+        std::stringstream s;
+        s << "Telescope latitude and longitude: <" << dd << ":" << mm << "> <" << ddd << ":" << mmm << ">";
+        meade_output(res, s.str(), false);
+      }
+      else
+      {
+        meade_output(res, "Error getting telescope's latitude and longitude", true);
+      }
+    }
+    else if(req.meade_action == "setlatlon")
+    {
+      ROS_INFO("Telescope request: %s", req.meade_action.c_str());
+
+      if(setSiteLatitude(portFD, req.lat) == 0 && setSiteLongitude(portFD, req.lon) == 0)
+      {
+        std::stringstream s;
+        s << "Telescope latitude and longitude set to: " << req.lat << " " << req.lon;
+        meade_output(res, s.str(), false);
+      }
+      else
+      {
+        meade_output(res, "Error setting telescope's latitude and longitude", true);
+      }
+    }
     else if(req.meade_action == "focus")
     {
       int motion_type;
