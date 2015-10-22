@@ -315,7 +315,7 @@ Requirements
 Changes
 -------
 
-Please check the file [`CHANGES`](CHANGES) for the list of changes and
+Please check the file [`CHANGELOG`](CHANGELOG) for the list of changes and
 acknowledgment to people contributing bugfixes or enhancements.
 
 Version
@@ -323,8 +323,8 @@ Version
 
 Version: 0.1 of 2015/09/22.
 
-The actual version of `ice_telescope` may be found on the following link
-[`http://www.ice.csic.es/`](http://www.ice.csic.es/).
+The actual version of `ice_telescope` may be found on the following link:
+[`ice_telescope.zip`](https://baiels.redkaos.org/index.php/s/W9DkiAbM9cbS8Hr).
 
 License and Copyright
 ---------------------
@@ -352,4 +352,4 @@ Biel Artigues Aguilo
 
 Email: [`artigues@ice.cat`](mailto:artigues@ice.cat)
 
-WWW: [`http://www.ice.csic.es/`](http://www.ice.csic.es/)
+Web: [`http://www.ice.csic.es/`](http://www.ice.csic.es/)
