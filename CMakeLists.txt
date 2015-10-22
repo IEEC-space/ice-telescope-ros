@@ -82,25 +82,6 @@ include_directories(
   ${CFITSIO_INCLUDES}
 )
 
-#################
-## Full Server ##
-#################
-
-add_executable(ice_tel_server 
-	src/servers/ice_tel_server.cpp 
-	src/com/tty_com.c
-	src/dome/baader_dome.c 
-	src/ccd/csbigcam.cpp
-	src/ccd/csbigimg.cpp
-	src/telescope/lx200gps.c
-)
-add_dependencies(ice_tel_server ice_telescope_gencpp)
-target_link_libraries(ice_tel_server 
-	${catkin_LIBRARIES} 
-	${LIBUSB_1_LIBRARIES} 
-	${CFITSIO_CFITSIO_LIBRARY} 
-	${SBIGUDRV_LIBRARY}
-)
 
 ###############################
 ## Baader dome server/client ##
