@@ -91,8 +91,8 @@ include_directories(
 
 add_executable(baader_server 
   src/servers/baader_server.cpp 
-  src/com/tty_com.c
-  src/dome/baader_dome.c 
+  src/drivers/tty_com.c
+  src/drivers/baader_dome.c 
 )
 add_dependencies(baader_server ice_telescope_gencpp)
 target_link_libraries(baader_server ${catkin_LIBRARIES})
@@ -111,8 +111,8 @@ target_link_libraries(baader_client ${catkin_LIBRARIES})
 
 add_executable(sbig_server 
   src/servers/sbig_server.cpp 
-  src/ccd/csbigcam.cpp
-  src/ccd/csbigimg.cpp
+  src/drivers/csbigcam.cpp
+  src/drivers/csbigimg.cpp
 )
 add_dependencies(sbig_server ice_telescope_gencpp)
 target_link_libraries(sbig_server 
@@ -136,8 +136,8 @@ target_link_libraries(sbig_client ${catkin_LIBRARIES})
 
 add_executable(meade_server 
   src/servers/meade_server.cpp 
-  src/com/tty_com.c 
-  src/telescope/lx200gps.c
+  src/drivers/tty_com.c 
+  src/drivers/lx200gps.c
 )
 add_dependencies(meade_server ice_telescope_gencpp)
 target_link_libraries(meade_server ${catkin_LIBRARIES})
