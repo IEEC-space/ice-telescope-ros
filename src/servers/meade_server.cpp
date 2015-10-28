@@ -26,6 +26,18 @@ extern "C"
   #include "ice_telescope/lx200gps.h"
 }
 
+void meade_input(ice_telescope::meade::Request &req, string in_str)
+{
+  if(in_str.empty())
+  {
+    ROS_INFO("Telescope request: %s", req.meade_action.c_str());
+  }
+  else
+  {
+    ROS_INFO("Telescope request: %s %s", req.meade_action.c_str(), in_str.c_str());
+  }
+}
+
 void meade_output(ice_telescope::meade::Response &res, string out_str, bool error)
 {
   res.meade_response = out_str;
@@ -40,8 +52,187 @@ void meade_output(ice_telescope::meade::Response &res, string out_str, bool erro
   }
 }
 
-bool meade_action(ice_telescope::meade::Request  &req,
-                      ice_telescope::meade::Response &res)
+void meade_action_gps(int portFD, ice_telescope::meade::Response &res)
+{
+  gpsRestart(portFD);
+  updateGPS_System(portFD);
+
+  meade_output(res, "Updating gps", false);
+}
+
+void meade_action_getobjradec(int portFD, ice_telescope::meade::Response &res)
+{
+  double obj_ra, obj_dec;
+
+  if(getObjectRA(portFD, &obj_ra) == 0 && getObjectDEC(portFD, &obj_dec) == 0)
+  {
+    std::stringstream s;
+    s << "Target object is set to RA " << obj_ra << " - DEC " << obj_dec;
+    meade_output(res, s.str(), false);
+  }
+  else
+  {
+    meade_output(res, "Error getting object's RA/DEC", true);
+  }
+}
+
+void meade_action_gettelradec(int portFD, ice_telescope::meade::Response &res)
+{
+  double lx_ra, lx_dec;
+
+  if(getLX200RA(portFD, &lx_ra) == 0 && getLX200DEC(portFD, &lx_dec) == 0)
+  {
+    std::stringstream s;
+    s << "Telescope is at RA " << lx_ra << " - DEC " << lx_dec;
+    meade_output(res, s.str(), false);
+  }
+  else
+  {
+    meade_output(res, "Error getting telescope's RA/DEC", true);
+  }
+}
+
+void meade_action_getdatetime(int portFD, ice_telescope::meade::Response &res)
+{
+  char ltime[64];
+  char date[64];
+
+  if(getCalenderDate(portFD, date) == 0 && getLocTime(portFD, ltime) == 0)
+  {
+    std::stringstream s;
+    s << "Telescope date and time: " << date << " " << ltime;
+    meade_output(res, s.str(), false);
+  }
+  else
+  {
+    meade_output(res, "Error getting telescope's date and time", true);
+  }
+}
+
+void meade_action_setdatetime(int portFD, ice_telescope::meade::Response &res)
+{
+  struct tm* pTm;
+  struct timeval tv;
+  struct timezone tz;
+
+  gettimeofday(&tv, &tz);
+  pTm = localtime(&(tv.tv_sec));
+
+  if(setCalenderDate(portFD, pTm->tm_mday, pTm->tm_mon + 1, pTm->tm_year + 1900) == 0 && setLocalTime(portFD, pTm->tm_hour, pTm->tm_min, pTm->tm_sec) == 0)
+  {
+    meade_output(res, "Telescope's date and time set to now", false);
+  }
+  else
+  {
+    meade_output(res, "Error setting telescope's date and time", true);
+  }
+}
+
+void meade_action_getlatlon(int portFD, ice_telescope::meade::Response &res)
+{
+  int dd, mm;
+  int ddd, mmm;
+
+  if(getSiteLatitude(portFD, &dd, &mm) == 0 && getSiteLongitude(portFD, &ddd, &mmm) == 0)
+  {
+    std::stringstream s;
+    s << "Telescope latitude and longitude: <" << dd << ":" << mm << "> <" << ddd << ":" << mmm << ">";
+    meade_output(res, s.str(), false);
+  }
+  else
+  {
+    meade_output(res, "Error getting telescope's latitude and longitude", true);
+  }
+}
+
+void meade_action_setlatlon(int portFD, ice_telescope::meade::Request &req, ice_telescope::meade::Response &res)
+{
+  if(setSiteLatitude(portFD, req.lat) == 0 && setSiteLongitude(portFD, req.lon) == 0)
+  {
+    std::stringstream s;
+    s << "Telescope latitude and longitude set to: " << req.lat << " " << req.lon;
+    meade_output(res, s.str(), false);
+  }
+  else
+  {
+    meade_output(res, "Error setting telescope's latitude and longitude", true);
+  }
+}
+
+void meade_action_focus(int portFD, ice_telescope::meade::Request &req, ice_telescope::meade::Response &res)
+{
+  // int motion_type;
+
+  // if(req.focus_motion == "in")
+  // {
+  //   motion_type = LX200_FOCUSIN;
+  // }
+  // else if(req.focus_motion == "out")
+  // {
+  //   motion_type = LX200_FOCUSOUT;
+  // }
+  // else
+  // {
+    meade_output(res, "Invalid focus motion. Options are in/out", true);
+  // }
+
+  // if(setFocuserMotion(portFD, motion_type) == 0)
+  // {
+  //   std::stringstream s;
+  //   s << "Telescope focusing " << req.focus_motion;
+  //   meade_output(res, s.str(), false);
+  // }
+  // else
+  // {
+  //   meade_output(res, "Error focusing telescope", true);
+  // }
+}
+
+void meade_action_goto(int portFD, ice_telescope::meade::Request &req, ice_telescope::meade::Response &res)
+{
+  char* return_msg;
+
+  return_msg = (char*)malloc(64*sizeof(char));
+  if(GoTo(portFD, req.ra, req.dec, return_msg))
+  {
+    meade_output(res, "Telescope slewing to target", false);
+  }
+  else
+  {
+    meade_output(res, string(return_msg), true);
+  }
+}
+
+void meade_action_catalog(int portFD, ice_telescope::meade::Request &req, ice_telescope::meade::Response &res)
+{
+  int catalog = 0;
+  int err = 0;
+
+  if(req.meade_action == "messier")
+    catalog = LX200_MESSIER_C;
+  else if(req.meade_action == "star")
+    catalog = LX200_STAR_C;
+  else
+    catalog = LX200_DEEPSKY_C;
+
+  if(selectCatalogObject(portFD, catalog, req.object_num) == 0)
+  {
+    if((err = Slew(portFD)) == 0)
+    {
+      meade_output(res, "Telescope slewing to target", false);
+    }
+    else
+    {
+      meade_output(res, string(slewErrorString(err)), true);
+    }
+  }
+  else
+  {
+    meade_output(res, "Target selection failed", true);
+  }
+}
+
+bool meade_action(ice_telescope::meade::Request &req, ice_telescope::meade::Response &res)
 {
   int portFD = -1;
 
@@ -49,194 +240,57 @@ bool meade_action(ice_telescope::meade::Request  &req,
   {
     if(req.meade_action == "gps")
     {
-      ROS_INFO("Telescope request: %s", req.meade_action.c_str());
-
-      gpsRestart(portFD);
-      updateGPS_System(portFD);
-
-      meade_output(res, "Updating gps", false);
+      meade_input(req, NULL);
+      meade_action_gps(portFD, res);
     }
     else if(req.meade_action == "getobjradec")
     {
-      double obj_ra, obj_dec;
-
-      ROS_INFO("Telescope request: %s", req.meade_action.c_str());
-
-      if(getObjectRA(portFD, &obj_ra) == 0 && getObjectDEC(portFD, &obj_dec) == 0)
-      {
-        std::stringstream s;
-        s << "Target object is set to RA " << obj_ra << " - DEC " << obj_dec;
-        meade_output(res, s.str(), false);
-      }
-      else
-      {
-        meade_output(res, "Error getting object's RA/DEC", true);
-      }
+      meade_input(req, NULL);
+      meade_action_getobjradec(portFD, res);
     }
     else if(req.meade_action == "gettelradec")
     {
-      double lx_ra, lx_dec;
-
-      ROS_INFO("Telescope request: %s", req.meade_action.c_str());
-
-      if(getLX200RA(portFD, &lx_ra) == 0 && getLX200DEC(portFD, &lx_dec) == 0)
-      {
-        std::stringstream s;
-        s << "Telescope is at RA " << lx_ra << " - DEC " << lx_dec;
-        meade_output(res, s.str(), false);
-      }
-      else
-      {
-        meade_output(res, "Error getting telescope's RA/DEC", true);
-      }
+      meade_input(req, NULL);
+      meade_action_gettelradec(portFD, res);
     }
     else if(req.meade_action == "getdatetime")
     {
-      char ltime[64];
-      char date[64];
-
-      ROS_INFO("Telescope request: %s", req.meade_action.c_str());
-
-      if(getCalenderDate(portFD, date) == 0 && getLocTime(portFD, ltime) == 0)
-      {
-        std::stringstream s;
-        s << "Telescope date and time: " << date << " " << ltime;
-        meade_output(res, s.str(), false);
-      }
-      else
-      {
-        meade_output(res, "Error getting telescope's date and time", true);
-      }
+      meade_input(req, NULL);
+      meade_action_getdatetime(portFD, res);
     }
     else if(req.meade_action == "setdatetime")
     {
-      struct tm* pTm;
-      struct timeval tv;
-      struct timezone tz;
-
-      ROS_INFO("Telescope request: %s", req.meade_action.c_str());
-
-      gettimeofday(&tv, &tz);
-      pTm = localtime(&(tv.tv_sec));
-
-      if(setCalenderDate(portFD, pTm->tm_mday, pTm->tm_mon + 1, pTm->tm_year + 1900) == 0 && setLocalTime(portFD, pTm->tm_hour, pTm->tm_min, pTm->tm_sec) == 0)
-      {
-        meade_output(res, "Telescope's date and time set to now", false);
-      }
-      else
-      {
-        meade_output(res, "Error setting telescope's date and time", true);
-      }
+      meade_input(req, NULL);
+      meade_action_setdatetime(portFD, res);
     }
     else if(req.meade_action == "getlatlon")
     {
-      int dd, mm;
-      int ddd, mmm;
-
-      ROS_INFO("Telescope request: %s", req.meade_action.c_str());
-
-      if(getSiteLatitude(portFD, &dd, &mm) == 0 && getSiteLongitude(portFD, &ddd, &mmm) == 0)
-      {
-        std::stringstream s;
-        s << "Telescope latitude and longitude: <" << dd << ":" << mm << "> <" << ddd << ":" << mmm << ">";
-        meade_output(res, s.str(), false);
-      }
-      else
-      {
-        meade_output(res, "Error getting telescope's latitude and longitude", true);
-      }
+      meade_input(req, NULL);
+      meade_action_getlatlon(portFD, res);
     }
     else if(req.meade_action == "setlatlon")
     {
-      ROS_INFO("Telescope request: %s", req.meade_action.c_str());
-
-      if(setSiteLatitude(portFD, req.lat) == 0 && setSiteLongitude(portFD, req.lon) == 0)
-      {
-        std::stringstream s;
-        s << "Telescope latitude and longitude set to: " << req.lat << " " << req.lon;
-        meade_output(res, s.str(), false);
-      }
-      else
-      {
-        meade_output(res, "Error setting telescope's latitude and longitude", true);
-      }
+      meade_input(req, NULL);
+      meade_action_setlatlon(portFD, req, res);
     }
     else if(req.meade_action == "focus")
     {
-      int motion_type;
-
-      ROS_INFO("Telescope request: %s %s", req.meade_action.c_str(), req.focus_motion.c_str());
-
-      // if(req.focus_motion == "in")
-      // {
-      //   motion_type = LX200_FOCUSIN;
-      // }
-      // else if(req.focus_motion == "out")
-      // {
-      //   motion_type = LX200_FOCUSOUT;
-      // }
-      // else
-      // {
-        meade_output(res, "Invalid focus motion. Options are in/out", true);
-        return true;
-      // }
-
-      // if(setFocuserMotion(portFD, motion_type) == 0)
-      // {
-      //   std::stringstream s;
-      //   s << "Telescope focusing " << req.focus_motion;
-      //   meade_output(res, s.str(), false);
-      // }
-      // else
-      // {
-      //   meade_output(res, "Error focusing telescope", true);
-      // }
+      meade_input(req, req.focus_motion);
+      meade_action_focus(portFD, req, res);
     }
     else if(req.meade_action == "goto")
     {
-      char* return_msg;
-
-      ROS_INFO("Telescope request: %s RA %f - DEC %f", req.meade_action.c_str(), req.ra, req.dec);
-      
-      return_msg = (char*)malloc(64*sizeof(char));
-      if(GoTo(portFD, req.ra, req.dec, return_msg))
-      {
-        meade_output(res, "Telescope slewing to target", false);
-      }
-      else
-      {
-        meade_output(res, string(return_msg), true);
-      }
+      std::stringstream s;
+      s << "RA " << req.ra << " - DEC " << req.dec;
+      meade_input(req, s.str());
+      meade_action_goto(portFD, req, res);
     }
     else if(req.meade_action == "messier" || req.meade_action == "star" || req.meade_action == "deepsky")
     {
-      int catalog = 0;
-      int err = 0;
-
-      ROS_INFO("Telescope request: %s %d", req.meade_action.c_str(), req.object_num);
-
-      if(req.meade_action == "messier")
-        catalog = LX200_MESSIER_C;
-      else if(req.meade_action == "star")
-        catalog = LX200_STAR_C;
-      else
-        catalog = LX200_DEEPSKY_C;
-
-      if(selectCatalogObject(portFD, catalog, req.object_num) == 0)
-      {
-        if((err = Slew(portFD)) == 0)
-        {
-          meade_output(res, "Telescope slewing to target", false);
-        }
-        else
-        {
-          meade_output(res, string(slewErrorString(err)), true);
-        }
-      }
-      else
-      {
-        meade_output(res, "Target selection failed", true);
-      }
+      std::stringstream s;
+      s << req.object_num; // gcc bug where std::to_string() is not found
+      meade_input(req, s.str());
+      meade_action_catalog(portFD, req, res);
     }
     else
     {
