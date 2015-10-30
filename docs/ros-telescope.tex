@@ -39,7 +39,7 @@
 }
 
 \setVersionWord{Version:}  %%% that's the default, no need to set it.
-\setVersion{0.1}
+\setVersion{0.1.1}
 
 \begin{document}
 
@@ -67,12 +67,16 @@
 
 \section{Description}
 %%%%%%%%%%%%%%%%%%%%%
-\Prog{ice\_telescope} is composed of several nodes --\Prog{ice\_telescope\_node}-- that allow the control of the telescope system. Each of the system components (telescope, dome, ccd) has a pair of client--server nodes following the naming convention \Prog{brand\_server} and \Prog{brand\_client}: 
-\begin{Description}[\Opt{Telescope}]\setlength{\itemsep}{0cm}
+\Prog{ice\_telescope} is composed of several nodes --\Prog{ice\_telescope\_node}-- that allow the control of the telescope system. In addition to the server to control all devices \Prog{ice\_tel\_server}, each of the system components (telescope, dome, ccd) has a pair of client--server nodes following the naming convention \Prog{brand\_server} and \Prog{brand\_client}: 
+\begin{Description}[\Opt{Full-Server}]\setlength{\itemsep}{0cm}
+\item[\Opt{Full-Server}] \Prog{ice\_tel\_server}.
 \item[\Opt{Telescope}] \Prog{meade\_server} and \Prog{meade\_client}.
 \item[\Opt{CCD}] \Prog{sbig\_server} and \Prog{sbig\_client}.
 \item[\Opt{Dome}] \Prog{baader\_server} and \Prog{baader\_client}.
 \end{Description}
+
+\noindent
+\textbf{Note:} The \Prog{brand\_server} servers are there for your convenience but only the \Prog{ice\_tel\_server} is necessary to control them all. \\
 
 The server node runs continuously waiting for petitions from the client node. When a client node's petition is received by the server node, the server processes the petition, sends a response back to the client and returns to the waiting mode. The client waits for the server response and finishes the execution. \\
 
@@ -91,6 +95,11 @@ The \Opt{action} parameter issues the desired order to the server.
 %%%%%%%%%%%%%%%%%
 
 The servers for all the system elements are executed without additional parameters and they must be running to listen to the clients commands. \\
+
+\noindent
+\textbf{Full-Server}
+
+\Prog{rosrun} \Prog{ice\_telescope} \Prog{ice\_tel\_server}
 
 \noindent
 \textbf{Telescope}
@@ -272,6 +281,7 @@ The \Arg{action} parameter is the command to be sent to the server. The \Arg{act
 %%%%%%%%%%%%%%%%%
 
 \begin{Description}[\File{baader\_client.py}]\setlength{\itemsep}{0cm}
+\item[\File{ice\_tel\_server}] C++ implementation of the server to control all devices.
 \item[\File{meade\_server}] C++ implementation of the telescope server.
 \item[\File{meade\_client}] C++ implementation of the telescope client.
 \item[\File{meade\_client.py}] Python implementation for the telescope client.
@@ -290,9 +300,7 @@ The \Arg{action} parameter is the command to be sent to the server. The \Arg{act
 \begin{lstlisting}[language=bash, frame=single, breaklines=true]
 $ roscore &
 
-$ rosrun ice_telescope baader_server &
-$ rosrun ice_telescope sbig_server &
-$ rosrun ice_telescope meade_server &
+$ rosrun ice_telescope ice_tel_server &
 
 $ rosrun ice_telescope baader_client open
 $ rosrun ice_telescope sbig_client settemp 1 10.0

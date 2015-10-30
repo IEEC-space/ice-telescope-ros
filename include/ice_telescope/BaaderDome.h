@@ -1,5 +1,5 @@
 /*
-    ICE Telescope ROS Package: SBIG CCD Server
+    ICE Telescope ROS Package: Baader Planetarium Dome
     Copyright (C) 2015 Biel Artigues Aguilo
 
     This program is free software: you can redistribute it and/or modify
@@ -16,20 +16,24 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ros/ros.h"
-#include "ice_telescope/SbigCcd.h"
+#include "ice_telescope/baader.h"
+#include <string>
+using namespace std;
 
-int main(int argc, char **argv)
+class BaaderDome
 {
-  ros::init(argc, argv, "sbig_server");
-  ros::NodeHandle n;
 
-  // CCD service
-  SbigCcd sbigCcd;
-  ros::ServiceServer sbigService = n.advertiseService("sbig_action", &SbigCcd::sbig_action, &sbigCcd);
-  ROS_INFO("Ready to control ccd");
+public:
+  BaaderDome();
+  ~BaaderDome();
 
-  ros::spin();
+  bool baader_action(ice_telescope::baader::Request &req, ice_telescope::baader::Response &res);
 
-  return 0;
-}
+protected:
+  void baader_input(ice_telescope::baader::Request &req);
+  void baader_output(ice_telescope::baader::Response &res, string out_str, bool error);
+  void baader_action_open(ice_telescope::baader::Response &res);
+  void baader_action_close(ice_telescope::baader::Response &res);
+  void baader_action_status(ice_telescope::baader::Response &res);
+    
+};

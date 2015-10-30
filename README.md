@@ -42,15 +42,21 @@ Description
 -----------
 
 `ice_telescope` is composed of several nodes --`ice_telescope_node`--
-that allow the control of the telescope system. Each of the system
+that allow the control of the telescope system. In addition to the 
+server to control all devices `ice_tel_server`, each of the system
 components (telescope, dome, ccd) has a pair of client--server nodes
 following the naming convention `brand_server` and `brand_client`:
+
+**Full-Server**:   `ice_tel_server`.
 
 **Telescope**:   `meade_server` and `meade_client`.
 
 **CCD**:   `sbig_server` and `sbig_client`.
 
 **Dome**:   `baader_server` and `baader_client`.
+
+**Note:** The `brand_server` servers are there for your convenience 
+but only the `ice_tel_server` is necessary to control them all.
 
 The server node runs continuously waiting for petitions from the client
 node. When a client node's petition is received by the server node, the
@@ -73,6 +79,10 @@ Servers
 
 The servers for all the system elements are executed without additional
 parameters and they must be running to listen to the clients commands.
+
+**Full-Server**
+
+    rosrun ice_telescope ice_tel_server
 
 **Telescope**
 
@@ -260,6 +270,8 @@ closed, moving and unknown.
 Files
 -----
 
+`ice_tel_server` C++ implementation of the server to control all devices.
+
 `meade_server` C++ implementation of the telescope server.
 
 `meade_client` C++ implementation of the telescope client.
@@ -284,9 +296,7 @@ Example
 ```bash
 $ roscore &
 
-$ rosrun ice_telescope baader_server &
-$ rosrun ice_telescope sbig_server &
-$ rosrun ice_telescope meade_server &
+$ rosrun ice_telescope ice_tel_server &
 
 $ rosrun ice_telescope baader_client open
 $ rosrun ice_telescope sbig_client settemp 1 10.0
@@ -321,7 +331,7 @@ acknowledgment to people contributing bugfixes or enhancements.
 Version
 -------
 
-Version: 0.1 of 2015/09/22.
+Version: 0.1.1 of 2015/10/29.
 
 The actual version of `ice_telescope` may be found on the following link:
 [`ice_telescope.zip`](https://baiels.redkaos.org/index.php/s/W9DkiAbM9cbS8Hr).

@@ -2,4 +2,13 @@
 Change history of the ice_telescope package
 ===========================================
 
-0.1     25 Sep 2015      - Initial version
+0.1.1    29 Oct 2015    - Added README and docs folder
+                        - Code refactoring
+                        - Added full server (for all devices) 
+                          with non-blocking execution of callbacks
+                        - Added device classes instead of 
+                          list of functions
+                        - Added getter and setter for the latitude 
+                          and longitude of the telescope
+                          
+0.1.0    25 Sep 2015    - Initial version
