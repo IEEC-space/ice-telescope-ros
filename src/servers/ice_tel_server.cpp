@@ -1,5 +1,5 @@
 /*
-    ICE Telescope ROS Package: SBIG CCD Server
+    ICE Telescope ROS Package: Full Server (dome, telescope, ccd)
     Copyright (C) 2015 Biel Artigues Aguilo
 
     This program is free software: you can redistribute it and/or modify
@@ -17,19 +17,33 @@
 */
 
 #include "ros/ros.h"
+#include "ice_telescope/BaaderDome.h"
+#include "ice_telescope/MeadeTelescope.h"
 #include "ice_telescope/SbigCcd.h"
 
 int main(int argc, char **argv)
 {
-  ros::init(argc, argv, "sbig_server");
+  ros::init(argc, argv, "ice_tel_server");
   ros::NodeHandle n;
+  ros::AsyncSpinner spinner(4); // Use 4 threads. 0 -> use the number of cores.
+
+  // Dome service
+  BaaderDome baaderDome;
+  ros::ServiceServer baaderService = n.advertiseService("baader_action", &BaaderDome::baader_action, &baaderDome);
+  ROS_INFO("Ready to control dome");
+
+  // Telescope service
+  MeadeTelescope meadeTelescope;
+  ros::ServiceServer meadeService = n.advertiseService("meade_action", &MeadeTelescope::meade_action, &meadeTelescope);
+  ROS_INFO("Ready to control telescope");
 
   // CCD service
   SbigCcd sbigCcd;
   ros::ServiceServer sbigService = n.advertiseService("sbig_action", &SbigCcd::sbig_action, &sbigCcd);
   ROS_INFO("Ready to control ccd");
 
-  ros::spin();
+  spinner.start();
+  ros::waitForShutdown();
 
   return 0;
 }
