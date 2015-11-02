@@ -39,6 +39,8 @@ bool SbigCcd::sbig_action(ice_telescope::sbig::Request &req, ice_telescope::sbig
   // Create SBIG camera object
   CSBIGCam* pCam = new CSBIGCam(DEV_USB1);
 
+  ROS_INFO("Connecting to CCD");
+
   if((err = pCam->GetError()) != CE_NO_ERROR)
   {
     sbig_output(res, pCam, "CSBIGCam error: ", true, err);

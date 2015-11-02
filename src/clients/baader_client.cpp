@@ -20,6 +20,8 @@
 #include "ice_telescope/baader.h"
 #include <string.h>
 
+#define MAX_RETRIES 3
+
 int main(int argc, char **argv)
 {
   ros::init(argc, argv, "baader_client");
@@ -35,22 +37,29 @@ int main(int argc, char **argv)
 
   srv.request.baader_action = argv[1];
 
-  if(client.call(srv))
+  for(int i = 0; i < MAX_RETRIES; i++)
   {
-    if (srv.response.baader_error)
+    if(client.call(srv))
     {
-      ROS_ERROR(srv.response.baader_response.c_str());
-      return 1;
+      if (srv.response.baader_error)
+      {
+        ROS_ERROR(srv.response.baader_response.c_str());
+        if(i < (MAX_RETRIES-1))
+          ROS_INFO("Retrying...");
+      }
+      else
+      {
+        ROS_INFO(srv.response.baader_response.c_str());
+        return 0;
+      }
     }
     else
     {
-      ROS_INFO(srv.response.baader_response.c_str());
-      return 0;
+      ROS_ERROR("Failed to call dome service");
+      return 1;
     }
   }
-  else
-  {
-    ROS_ERROR("Failed to call dome service");
-    return 1;
-  }
+
+  // If we arrive here, the action has not been successful
+  return 1;
 }

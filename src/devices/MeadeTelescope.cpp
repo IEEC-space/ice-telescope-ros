@@ -38,6 +38,7 @@ bool MeadeTelescope::meade_action(ice_telescope::meade::Request &req, ice_telesc
 {
   int portFD = -1;
 
+  ROS_INFO("Connecting to telescope");
   if(lx200_connect(&portFD))
   {
     if(req.meade_action == "gps")

@@ -20,6 +20,8 @@ import sys
 import rospy
 from ice_telescope.srv import *
 
+MAX_RETRIES = 3
+
 def usage():
     return "Usage: baader_client action. Action: open; close; status"
 
@@ -40,10 +42,15 @@ if __name__ == "__main__":
         rospy.loginfo("%s", usage())
         sys.exit(1)
     
-    resp = baader_action_client(action)
-    if resp.baader_error:
-        rospy.logerr("%s", resp.baader_response)
-        sys.exit(1)
-    else:
-        rospy.loginfo("%s", resp.baader_response)
-        sys.exit(0)
+    for i in range(0, MAX_RETRIES):
+        resp = baader_action_client(action)
+        if resp.baader_error:
+            rospy.logerr("%s", resp.baader_response)
+            if i < (MAX_RETRIES-1):
+                rospy.loginfo("Retrying...")
+        else:
+            rospy.loginfo("%s", resp.baader_response)
+            sys.exit(0)
+
+    # If we arrive here, the action has not been successful
+    sys.exit(1)
