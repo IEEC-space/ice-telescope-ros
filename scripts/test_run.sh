@@ -8,16 +8,8 @@ if !(ps aux | grep -q '[r]oscore'); then
 fi
 
 echo "Initializing servers"
-if !(ps aux | grep -q '[b]aader_server'); then
-  rosrun ice_telescope baader_server &
-fi
-
-if !(ps aux | grep -q '[s]big_server'); then  
-  rosrun ice_telescope sbig_server &
-fi
-
-if !(ps aux | grep -q '[m]eade_server'); then
-  rosrun ice_telescope meade_server &
+if !(ps aux | grep -q '[i]ce_tel_server'); then
+  rosrun ice_telescope ice_tel_server &
 fi
 
 sleep 2

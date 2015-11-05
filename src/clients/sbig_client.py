@@ -20,8 +20,6 @@ import sys
 import rospy
 from ice_telescope.srv import *
 
-MAX_RETRIES = 3
-
 def usage_general():
 	rospy.loginfo("Usage: sbig_client action [action arguments]. Action: capture; settemp; gettemp")
 
@@ -136,15 +134,10 @@ if __name__ == "__main__":
 		temp_enable = None
 
 
-	for i in range(0, MAX_RETRIES):
-		resp = sbig_action_client(sbig_action, file_path, fits_file, img_count, lf_img, exp_time, readout_mode, top, left, width, height, fast_readout, dual_readout_channel, temperature, temp_enable)
-		if resp.sbig_error:
-			rospy.logerr("%s", resp.sbig_response)
-			if i < (MAX_RETRIES-1):
-				rospy.loginfo("Retrying...")
-		else:
-			rospy.loginfo("%s", resp.sbig_response)
-			sys.exit(0)
-
-	# If we arrive here, the action has not been successful
-	sys.exit(1)
+	resp = sbig_action_client(sbig_action, file_path, fits_file, img_count, lf_img, exp_time, readout_mode, top, left, width, height, fast_readout, dual_readout_channel, temperature, temp_enable)
+	if resp.sbig_error:
+		rospy.logerr("%s", resp.sbig_response)
+		sys.exit(1)
+	else:
+		rospy.loginfo("%s", resp.sbig_response)
+		sys.exit(0)

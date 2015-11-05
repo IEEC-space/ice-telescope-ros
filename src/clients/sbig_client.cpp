@@ -20,8 +20,6 @@
 #include "ice_telescope/sbig.h"
 #include <string.h>
 
-#define MAX_RETRIES 3
-
 void usage_general()
 {
   ROS_INFO("Usage: sbig_client action [action arguments]. Action: capture; settemp; gettemp");
@@ -142,29 +140,22 @@ int main(int argc, char **argv)
     }
   }
 
-  for(int i = 0; i < MAX_RETRIES; i++)
+  if(client.call(srv))
   {
-    if(client.call(srv))
+    if(srv.response.sbig_error)
     {
-      if(srv.response.sbig_error)
-      {
-        ROS_ERROR(srv.response.sbig_response.c_str());
-        if(i < (MAX_RETRIES-1))
-          ROS_INFO("Retrying...");
-      }
-      else
-      {
-        ROS_INFO(srv.response.sbig_response.c_str());
-        return 0;
-      }
+      ROS_ERROR(srv.response.sbig_response.c_str());
+      return 1;
     }
     else
     {
-      ROS_ERROR("Failed to call ccd service");
-      return 1;
+      ROS_INFO(srv.response.sbig_response.c_str());
+      return 0;
     }
   }
-
-  // If we arrive here, the action has not been successful
-  return 1;
+  else
+  {
+    ROS_ERROR("Failed to call ccd service");
+    return 1;
+  }
 }

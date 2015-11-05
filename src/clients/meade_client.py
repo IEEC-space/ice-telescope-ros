@@ -20,8 +20,6 @@ import sys
 import rospy
 from ice_telescope.srv import *
 
-MAX_RETRIES = 3
-
 def usage_general():
     rospy.loginfo("Usage: meade_client action [action arguments]. Action: goto; messier; star; deepsky; focus; gps; getobjradec; gettelradec; getdatetime; setdatetime; setlatlon; getlatlon")
 
@@ -114,15 +112,11 @@ if __name__ == "__main__":
         lat = None
         lon = None
 
-    for i in range(0, MAX_RETRIES):
-        resp = meade_action_client(action, ra, dec, object_num, focus_motion, lat, lon)
-        if resp.meade_error:
-            rospy.logerr("%s", resp.meade_response)
-            if i < (MAX_RETRIES-1):
-                rospy.loginfo("Retrying...")
-        else:
-            rospy.loginfo("%s", resp.meade_response)
-            sys.exit(0)
-
-    # If we arrive here, the action has not been successful
-    sys.exit(1)
+    
+    resp = meade_action_client(action, ra, dec, object_num, focus_motion, lat, lon)
+    if resp.meade_error:
+        rospy.logerr("%s", resp.meade_response)
+        sys.exit(1)
+    else:
+        rospy.loginfo("%s", resp.meade_response)
+        sys.exit(0)
