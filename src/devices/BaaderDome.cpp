@@ -44,6 +44,7 @@ BaaderDome::~BaaderDome()
 
 bool BaaderDome::baader_action(ice_telescope::baader::Request &req, ice_telescope::baader::Response &res)
 {
+  ROS_INFO("Connecting to dome");
   if(dome_connect())
   {
     baader_input(req);

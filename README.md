@@ -322,6 +322,12 @@ Requirements
 **ROS Workspace:**   If you want to compile or install the distributed system, you need a
     `catkin` workspace.
 
+**Libraries:** 
+
+  - libusb-1.0
+  - cfitsio
+  - libsbigudrv. This library can be downloaded from [here](http://archive.sbig.com/sbwhtmls/devswframe.htm).
+
 Changes
 -------
 

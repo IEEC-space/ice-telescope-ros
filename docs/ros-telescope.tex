@@ -323,7 +323,13 @@ ROS, \Prog{rosrun}, \Prog{roscd}, \Prog{rosls}, \Prog{catkin\_make}.
 
 \begin{description}\setlength{\itemsep}{0cm}
 \item[ROS Environment] \Prog{ice\_telescope} requires ROS version $>=$ 1.11.13 ($>=$ Indigo distribution).
-\item[ROS Workspace] If you want to compile or install the distributed system, you need a \Prog{catkin} workspace. 
+\item[ROS Workspace] If you want to compile or install the distributed system, you need a \Prog{catkin} workspace.
+\item[Libraries]: 
+	\begin{itemize}
+		\item \Opt{libusb-1.0}.
+		\item \Opt{cfitsio}.
+		\item \Opt{libsbigudrv}. This library can be downloaded from \\ \URL{http://archive.sbig.com/sbwhtmls/devswframe.htm}.
+	\end{itemize}
 \end{description}
 
 \section{Changes}
