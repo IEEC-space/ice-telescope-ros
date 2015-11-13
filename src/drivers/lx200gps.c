@@ -37,7 +37,7 @@
 #endif
 
 #define DEVICE_NAME "/dev/ttyUSB1"
-#define LX200_TIMEOUT	5		/* FD timeout in seconds */
+#define LX200_TIMEOUT	3		/* FD timeout in seconds */
 
 int controller_format;
 int lx200_debug = 0;

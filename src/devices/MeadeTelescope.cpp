@@ -24,9 +24,13 @@ extern "C"
   #include "ice_telescope/lx200gps.h"
 }
 
-MeadeTelescope::MeadeTelescope()
-{
+#define MAX_RETRIES 3
 
+MeadeTelescope::MeadeTelescope():
+retries(0)
+{
+  ros::NodeHandle n;
+  retry_pub = n.advertise<std_msgs::String>("retry_meade", 5);
 }
 
 MeadeTelescope::~MeadeTelescope()
@@ -104,7 +108,19 @@ bool MeadeTelescope::meade_action(ice_telescope::meade::Request &req, ice_telesc
   }
   else
   {
-    meade_output(res, "Telescope connection failed", true);
+    if(retries < (MAX_RETRIES-1))
+    {
+      retries++;
+      msg.data = "Telescope connection failed. Retrying...";
+      ROS_ERROR(msg.data.c_str());
+      retry_pub.publish(msg);
+      meade_action(req, res);
+    }
+    else
+    {
+      meade_output(res, "Telescope connection failed", true);
+      retries = 0;
+    }
   }
 
   return true;

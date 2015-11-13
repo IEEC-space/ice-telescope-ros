@@ -17,8 +17,14 @@
 */
 
 #include "ros/ros.h"
+#include "std_msgs/String.h"
 #include "ice_telescope/baader.h"
 #include <string.h>
+
+void retryCallback(const std_msgs::String::ConstPtr& msg)
+{
+  ROS_ERROR(msg->data.c_str());
+}
 
 int main(int argc, char **argv)
 {
@@ -30,10 +36,14 @@ int main(int argc, char **argv)
   }
 
   ros::NodeHandle n;
+  ros::AsyncSpinner spinner(2);
   ros::ServiceClient client = n.serviceClient<ice_telescope::baader>("baader_action");
+  ros::Subscriber sub = n.subscribe("retry_baader", 5, retryCallback);
   ice_telescope::baader srv;
 
   srv.request.baader_action = argv[1];
+
+  spinner.start();
 
   if(client.call(srv))
   {

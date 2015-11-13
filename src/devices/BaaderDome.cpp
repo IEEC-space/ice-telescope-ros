@@ -24,22 +24,18 @@ extern "C"
   #include "ice_telescope/baader_dome.h"
 }
 
+#define MAX_RETRIES 3
 
-BaaderDome::BaaderDome()
+BaaderDome::BaaderDome():
+retries(0)
 {
-  // if(dome_connect())
-  // {
-  //   ROS_INFO("Dome connected");
-  // }
-  // else
-  // {
-  //   ROS_ERROR("Dome connection failed");
-  // }
+  ros::NodeHandle n;
+  retry_pub = n.advertise<std_msgs::String>("retry_baader", 5);
 }
 
 BaaderDome::~BaaderDome()
 {
-  // dome_disconnect();
+
 }
 
 bool BaaderDome::baader_action(ice_telescope::baader::Request &req, ice_telescope::baader::Response &res)
@@ -70,7 +66,19 @@ bool BaaderDome::baader_action(ice_telescope::baader::Request &req, ice_telescop
   }
   else
   {
-    baader_output(res, "Dome connection failed", true);
+    if(retries < (MAX_RETRIES-1))
+    {
+      retries++;
+      msg.data = "Dome connection failed. Retrying...";
+      ROS_ERROR(msg.data.c_str());
+      retry_pub.publish(msg);
+      baader_action(req, res);
+    }
+    else
+    {
+      baader_output(res, "Dome connection failed", true);
+      retries = 0;
+    }
   }
 
   return true;

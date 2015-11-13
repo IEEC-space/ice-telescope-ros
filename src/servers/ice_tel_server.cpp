@@ -25,7 +25,7 @@ int main(int argc, char **argv)
 {
   ros::init(argc, argv, "ice_tel_server");
   ros::NodeHandle n;
-  ros::AsyncSpinner spinner(4); // Use 4 threads. 0 -> use the number of cores.
+  ros::AsyncSpinner spinner(8); // Use 8 threads. 0 -> use the number of cores.
 
   // Dome service
   BaaderDome baaderDome;

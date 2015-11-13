@@ -17,6 +17,7 @@
 */
 
 #include "ice_telescope/meade.h"
+#include "std_msgs/String.h"
 #include <string>
 using namespace std;
 
@@ -30,6 +31,10 @@ public:
   bool meade_action(ice_telescope::meade::Request &req, ice_telescope::meade::Response &res);
 
 protected:
+  int retries;
+  ros::Publisher retry_pub;
+  std_msgs::String msg;
+
   void meade_input(ice_telescope::meade::Request &req, string in_str);
   void meade_output(ice_telescope::meade::Response &res, string out_str, bool error);
   void meade_action_gps(int portFD, ice_telescope::meade::Response &res);

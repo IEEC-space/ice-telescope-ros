@@ -18,6 +18,7 @@
 
 import sys
 import rospy
+from std_msgs.msg import String
 from ice_telescope.srv import *
 
 def usage_general():
@@ -39,6 +40,9 @@ def usage_latlon():
     rospy.loginfo("Usage: meade_client setlatlon latitude longitude")
     rospy.loginfo("Example: meade_client setlatlon 41.385 2.173")
 
+def retryCallback(msg):
+    rospy.logerr(msg.data)
+
 def meade_action_client(action, ra, dec, object_num, focus_motion, lat, lon):
     rospy.wait_for_service('meade_action')
     try:
@@ -50,6 +54,7 @@ def meade_action_client(action, ra, dec, object_num, focus_motion, lat, lon):
 
 if __name__ == "__main__":
     rospy.init_node('meade_client')
+    rospy.Subscriber("retry_meade", String, retryCallback)
     if len(sys.argv) < 2:
         usage_general()
         sys.exit(1)
