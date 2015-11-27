@@ -18,6 +18,13 @@ find_package(catkin REQUIRED COMPONENTS
   roslaunch
 )
 
+find_package(Qt4 4.6 REQUIRED COMPONENTS QtCore QtGui)
+include(${QT_USE_FILE})
+set(ice_tel_client_node_HDRS
+  include/ice_telescope/TelAppDialog.h
+)
+qt4_wrap_cpp(ice_tel_client_node_MOCS ${ice_tel_client_node_HDRS})
+
 ## Find libusb library
 find_package(PkgConfig REQUIRED)
 pkg_search_module(LIBUSB1 REQUIRED libusb-1.0)
@@ -80,6 +87,7 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
   ${LIBUSB1_INCLUDE_DIRS}
   ${CFITSIO_INCLUDES}
+  ${QT_INCLUDE_DIRS}
 )
 
 
@@ -105,6 +113,18 @@ target_link_libraries(ice_tel_server
   ${CFITSIO_CFITSIO_LIBRARY} 
   ${SBIGUDRV_LIBRARY}
 )
+
+################
+## Client App ##
+################
+
+add_executable(ice_tel_client
+  src/clients/TelApp.cpp
+  src/clients/TelAppDialog.cpp
+  ${ice_tel_client_node_MOCS}
+)
+add_dependencies(ice_tel_client ice_telescope_gencpp)
+target_link_libraries(ice_tel_client ${catkin_LIBRARIES} ${QT_LIBRARIES})
 
 ###############################
 ## Baader dome server/client ##
