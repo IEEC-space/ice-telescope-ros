@@ -18,8 +18,7 @@
 
 #include "ros/ros.h"
 #include "ice_telescope/SbigCcd.h"
-
-boost::mutex SbigCcd::mutex;
+    
 
 SbigCcd::SbigCcd()
 :err(CE_NO_ERROR)
@@ -101,8 +100,6 @@ bool SbigCcd::sbig_reconnect()
 
 bool SbigCcd::sbig_action(ice_telescope::sbig::Request &req, ice_telescope::sbig::Response &res)
 {
-  //mutex.lock();
-
   sbig_input(req);
 
   if(req.sbig_action == "gettemp")
@@ -125,8 +122,6 @@ bool SbigCcd::sbig_action(ice_telescope::sbig::Request &req, ice_telescope::sbig
   {
     sbig_output(res, NULL, "Invalid CCD action", true, CE_NO_ERROR);
   }
-  
-  //mutex.unlock();
 
   return true;
 }

@@ -20,7 +20,6 @@
 #include "ice_telescope/lpardrv.h"
 #include "ice_telescope/csbigcam.h"
 #include "ice_telescope/csbigimg.h"
-    #include <boost/thread/mutex.hpp>
 #include <string>
 using namespace std;
 
@@ -48,6 +47,5 @@ private:
   CSBIGImg* pImg;
   CSBIGCam* pCam;
   PAR_ERROR err;
-  static boost::mutex mutex;
 
 };
