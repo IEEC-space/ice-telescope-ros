@@ -17,7 +17,6 @@
 */
 
 #include "ice_telescope/baader.h"
-#include "std_msgs/String.h"
 #include <string>
 using namespace std;
 
@@ -31,10 +30,9 @@ public:
   bool baader_action(ice_telescope::baader::Request &req, ice_telescope::baader::Response &res);
 
 protected:
-  int retries;
-  ros::Publisher retry_pub;
-  std_msgs::String msg;
+  int portFD;
 
+  bool baader_reconnect();
   void baader_input(ice_telescope::baader::Request &req);
   void baader_output(ice_telescope::baader::Response &res, string out_str, bool error);
   void baader_action_open(ice_telescope::baader::Response &res);

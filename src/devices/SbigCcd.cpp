@@ -19,46 +19,99 @@
 #include "ros/ros.h"
 #include "ice_telescope/SbigCcd.h"
 
-SbigCcd::SbigCcd()
-{
+boost::mutex SbigCcd::mutex;
 
+SbigCcd::SbigCcd()
+:err(CE_NO_ERROR)
+{
+  sbig_connect();
 }
 
 SbigCcd::~SbigCcd()
 {
-
+  sbig_disconnect();
 }
 
-bool SbigCcd::sbig_action(ice_telescope::sbig::Request &req, ice_telescope::sbig::Response &res)
+bool SbigCcd::sbig_connect()
 {
-  PAR_ERROR err = CE_NO_ERROR;
-
   // Create SBIG Img object
-  CSBIGImg* pImg = new CSBIGImg;
+  pImg = new CSBIGImg;
 
   // Create SBIG camera object
-  CSBIGCam* pCam = new CSBIGCam(DEV_USB1);
+  pCam = new CSBIGCam(DEV_USB1);
 
   ROS_INFO("Connecting to CCD");
 
   if((err = pCam->GetError()) != CE_NO_ERROR)
   {
-    sbig_output(res, pCam, "CSBIGCam error: ", true, err);
-    return true;
+    ROS_ERROR("CSBIGCam error: %s", pCam->GetErrorString(err).c_str());
+    return false;
   }
 
   // Establish link to the camera
   if((err = pCam->EstablishLink()) != CE_NO_ERROR)
   {
-    sbig_output(res, pCam, "Establish link error: ", true, err);
-    return true;
+    ROS_ERROR("Establish link error: %s", pCam->GetErrorString(err).c_str());
+    return false;
   }
+
+  return true;
+}
+
+bool SbigCcd::sbig_disconnect()
+{
+  // Close sbig device
+  if((err = pCam->CloseDevice()) != CE_NO_ERROR)
+  {
+    ROS_ERROR("CSBIGCam error: %s", pCam->GetErrorString(err).c_str());
+    return false;
+  }
+
+  // Close sbig driver
+  if((err = pCam->CloseDriver()) != CE_NO_ERROR)
+  {
+    ROS_ERROR("CSBIGCam error: %s", pCam->GetErrorString(err).c_str());
+    return false;
+  }
+
+  // Delete objects
+  if(pImg)
+  {
+    delete pImg;
+  }
+
+  if(pCam)
+  {
+    delete pCam;
+  }
+
+  return true;
+}
+
+bool SbigCcd::sbig_reconnect()
+{
+  err = CE_NO_ERROR;
+
+  if(sbig_disconnect())
+    if(sbig_connect())
+      return true;
+
+  return false;
+}
+
+bool SbigCcd::sbig_action(ice_telescope::sbig::Request &req, ice_telescope::sbig::Response &res)
+{
+  //mutex.lock();
 
   sbig_input(req);
 
   if(req.sbig_action == "gettemp")
   {
     sbig_action_gettemp(res, pCam, err);
+  }
+  else if(req.sbig_action == "getcapstatus")
+  {
+    sbig_action_getcapstatus(res, pCam);
   }
   else if(req.sbig_action == "settemp")
   {
@@ -72,31 +125,8 @@ bool SbigCcd::sbig_action(ice_telescope::sbig::Request &req, ice_telescope::sbig
   {
     sbig_output(res, NULL, "Invalid CCD action", true, CE_NO_ERROR);
   }
-
-  // Close sbig device
-  if((err = pCam->CloseDevice()) != CE_NO_ERROR)
-  {
-    sbig_output(res, pCam, "CSBIGCam error: ", true, err);
-    return true;
-  }
-
-  // Close sbig driver
-  if((err = pCam->CloseDriver()) != CE_NO_ERROR)
-  {
-    sbig_output(res, pCam, "CSBIGCam error: ", true, err);
-    return true;
-  }
-
-  // Delete objects
-  if(pImg)
-  {
-    delete pImg;
-  }
-
-  if(pCam)
-  {
-    delete pCam;
-  }
+  
+  //mutex.unlock();
 
   return true;
 }
@@ -141,6 +171,25 @@ void SbigCcd::sbig_action_gettemp(ice_telescope::sbig::Response &res, CSBIGCam* 
 
   std::stringstream s;
   s << "CCD temperature is " << sbigTemp << " degrees C. Power to cooler: " << percentTE << ". Enabled: " << enabled;
+  sbig_output(res, NULL, s.str(), false, CE_NO_ERROR);
+}
+
+void SbigCcd::sbig_action_getcapstatus(ice_telescope::sbig::Response &res, CSBIGCam* pCam)
+{
+  GRAB_STATE grabState;
+  double percentComplete;
+
+  pCam->GetGrabState(grabState, percentComplete);
+
+  std::stringstream s;
+  if(grabState != GS_IDLE)
+  {
+    s << "CCD is busy. Progress: " << (percentComplete * 100) << "%%";
+  }
+  else
+  {
+    s << "CCD is IDLE"; 
+  }
   sbig_output(res, NULL, s.str(), false, CE_NO_ERROR);
 }
 

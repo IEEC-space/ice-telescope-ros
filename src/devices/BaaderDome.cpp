@@ -24,61 +24,52 @@ extern "C"
   #include "ice_telescope/baader_dome.h"
 }
 
-#define MAX_RETRIES 3
 
-BaaderDome::BaaderDome():
-retries(0)
+BaaderDome::BaaderDome()
+:portFD(-1)
 {
-  ros::NodeHandle n;
-  retry_pub = n.advertise<std_msgs::String>("retry_baader", 5);
+  ROS_INFO("Connecting to dome");
+  if(!dome_connect(&portFD))
+  {
+    ROS_ERROR("Dome connection failed");
+  }
 }
 
 BaaderDome::~BaaderDome()
 {
+  dome_disconnect(portFD);
+}
 
+bool BaaderDome::baader_reconnect()
+{
+  dome_disconnect(portFD);
+  portFD = -1;
+  ROS_INFO("Connecting to dome");
+  if(!dome_connect(&portFD))
+  {
+    ROS_ERROR("Dome connection failed");
+  }
 }
 
 bool BaaderDome::baader_action(ice_telescope::baader::Request &req, ice_telescope::baader::Response &res)
 {
-  ROS_INFO("Connecting to dome");
-  if(dome_connect())
+  baader_input(req);
+
+  if(req.baader_action == "open")
   {
-    baader_input(req);
-
-    if(req.baader_action == "open")
-    {
-      baader_action_open(res);
-    }
-    else if(req.baader_action == "close")
-    {
-      baader_action_close(res);
-    }
-    else if(req.baader_action == "status")
-    {
-      baader_action_status(res);
-    }
-    else
-    {
-      baader_output(res, "Invalid dome action", true);
-    }
-
-    dome_disconnect();
+    baader_action_open(res);
+  }
+  else if(req.baader_action == "close")
+  {
+    baader_action_close(res);
+  }
+  else if(req.baader_action == "status")
+  {
+    baader_action_status(res);
   }
   else
   {
-    if(retries < (MAX_RETRIES-1))
-    {
-      retries++;
-      msg.data = "Dome connection failed. Retrying...";
-      ROS_ERROR(msg.data.c_str());
-      retry_pub.publish(msg);
-      baader_action(req, res);
-    }
-    else
-    {
-      baader_output(res, "Dome connection failed", true);
-      retries = 0;
-    }
+    baader_output(res, "Invalid dome action", true);
   }
 
   return true;
@@ -105,7 +96,7 @@ void BaaderDome::baader_output(ice_telescope::baader::Response &res, string out_
 
 void BaaderDome::baader_action_open(ice_telescope::baader::Response &res)
 {
-  if(dome_control_shutter(SHUTTER_OPEN)) // Open shutter
+  if(dome_control_shutter(portFD, SHUTTER_OPEN)) // Open shutter
   {
     baader_output(res, "Opening shutter... This process can take up to 60 seconds", false);
   }
@@ -117,7 +108,7 @@ void BaaderDome::baader_action_open(ice_telescope::baader::Response &res)
 
 void BaaderDome::baader_action_close(ice_telescope::baader::Response &res)
 {
-  if(dome_control_shutter(SHUTTER_CLOSE)) // Close shutter
+  if(dome_control_shutter(portFD, SHUTTER_CLOSE)) // Close shutter
   {
     baader_output(res, "Closing shutter... This process can take up to 60 seconds", false);
   }
@@ -129,7 +120,7 @@ void BaaderDome::baader_action_close(ice_telescope::baader::Response &res)
 
 void BaaderDome::baader_action_status(ice_telescope::baader::Response &res)
 {
-  if(dome_shutter_status()) // Shutter status
+  if(dome_shutter_status(portFD)) // Shutter status
   {
     baader_output(res, dome_get_shutter_status_string(shutterStatus), false);
   }

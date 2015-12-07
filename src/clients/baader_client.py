@@ -18,14 +18,10 @@
 
 import sys
 import rospy
-from std_msgs.msg import String
 from ice_telescope.srv import *
 
 def usage():
     return "Usage: baader_client action. Action: open; close; status"
-
-def retryCallback(msg):
-    rospy.logerr(msg.data)
 
 def baader_action_client(action):
     rospy.wait_for_service('baader_action')
@@ -38,7 +34,6 @@ def baader_action_client(action):
 
 if __name__ == "__main__":
     rospy.init_node('baader_client')
-    rospy.Subscriber("retry_baader", String, retryCallback)
     if len(sys.argv) == 2:
         action = str(sys.argv[1])
     else:

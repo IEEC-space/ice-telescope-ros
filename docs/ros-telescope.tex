@@ -207,7 +207,7 @@ The CCD client issues the user's desired actions to perform with the SBIG ST-7 C
 
 The \Arg{action} parameter is the command to be sent to the server. The \Arg{action} can be one of the following:
 
-\begin{Description}[\Arg{gettemp}]\setlength{\itemsep}{0cm}
+\begin{Description}[\Arg{getcapstatus}]\setlength{\itemsep}{0cm}
 \item[\Arg{capture}] Start an exposure and save the result to file.
 
 	\Prog{rosrun} \Prog{ice\_telescope} \Prog{sbig\_client} \Arg{capture} \Arg{filePath} \Arg{fileType} \Arg{imgCount} \Arg{imgType} \Arg{expTime} \Arg{readoutMode} \Arg{top} \Arg{left} \Arg{width} \Arg{height} \Arg{fastReadout} \Arg{dualReadoutChannel}   
@@ -242,6 +242,10 @@ The \Arg{action} parameter is the command to be sent to the server. The \Arg{act
 \item[\Arg{gettemp}] Query the CCD temperature. The server returns the temperature, the power applied to the CCD as a percentage (0-1) and the cooler status (enabled/disabled).
 
 	\Prog{rosrun} \Prog{ice\_telescope} \Prog{sbig\_client} \Arg{gettemp}
+	
+\item[\Arg{getcapstatus}] Query the CCD capture status. The server returns the exposure progress percentage or the IDLE status.
+
+	\Prog{rosrun} \Prog{ice\_telescope} \Prog{sbig\_client} \Arg{getcapstatus}
 	
 \end{Description}
 

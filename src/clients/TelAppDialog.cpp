@@ -28,7 +28,6 @@ namespace telsys
 {
 
 TelAppDialog::TelAppDialog()
-:spinner(4)
 {
   createMenu();
   createLogDisplay();
@@ -56,13 +55,6 @@ TelAppDialog::TelAppDialog()
   domeClient = nh_.serviceClient<ice_telescope::baader>("baader_action");
   ccdClient = nh_.serviceClient<ice_telescope::sbig>("sbig_action");
   telescopeClient = nh_.serviceClient<ice_telescope::meade>("meade_action");
-
-  telescopeSub = nh_.subscribe("retry_meade", 5, &TelAppDialog::retryCallback, this);
-  domeSub = nh_.subscribe("retry_baader", 5, &TelAppDialog::retryCallback, this);
-  spinner.start();
-  // qRegisterMetaType<QString>("QString");
-  qRegisterMetaType<QTextCursor>("QTextCursor");
-  // connect(this, SIGNAL(updateLog(QString)), this, SLOT(updateUILog(QString)), Qt::DirectConnection);
 }
 
 TelAppDialog::~TelAppDialog()
@@ -466,28 +458,6 @@ void TelAppDialog::actionTelescope(QString action)
 
     ROS_ERROR("Failed to call telescope service");
   }
-
-  logTextDisplay->moveCursor(QTextCursor::Start);
-  logTextDisplay->insertPlainText(s.str().c_str());
-}
-
-void TelAppDialog::retryCallback(const std_msgs::String::ConstPtr& msg)
-{
-  ROS_ERROR(msg->data.c_str());
-  //logTextDisplay->moveCursor(QTextCursor::Start);
-  //logTextDisplay->insertPlainText(msg->data.c_str());
-  //emit updateLog(QString(msg->data.c_str()));
-  QMetaObject::invokeMethod(this, "updateUILog", Qt::DirectConnection,
-                          Q_ARG(QString, QString(msg->data.c_str())));
-}
-
-void TelAppDialog::updateUILog(QString msg)
-{
-  time_t now = time(0);
-  std::string dt(ctime(&now));
-  std::stringstream s;
-
-  s << "[" << dt.substr(0, dt.length()-1) << "]: " << msg.toStdString().c_str() << std::endl;
 
   logTextDisplay->moveCursor(QTextCursor::Start);
   logTextDisplay->insertPlainText(s.str().c_str());

@@ -234,6 +234,12 @@ status (enabled/disabled).
 
     rosrun ice_telescope sbig_client gettemp
 
+**getcapstatus**
+
+Query the CCD capture status. The server returns the exposure progress percentage or the IDLE status.
+
+    rosrun ice_telescope sbig_client getcapstatus
+
 Dome client
 -----------
 

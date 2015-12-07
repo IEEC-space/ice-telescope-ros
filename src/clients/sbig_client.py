@@ -21,7 +21,7 @@ import rospy
 from ice_telescope.srv import *
 
 def usage_general():
-	rospy.loginfo("Usage: sbig_client action [action arguments]. Action: capture; settemp; gettemp")
+	rospy.loginfo("Usage: sbig_client action [action arguments]. Action: capture; settemp; gettemp; getcapstatus")
 
 def usage_capture():
 	rospy.loginfo("Usage capture: sbig_client capture filePath fileType imgCount imgType expTime readoutMode top left width height fastReadout dualReadoutChannel")

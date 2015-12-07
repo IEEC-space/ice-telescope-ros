@@ -22,7 +22,7 @@
 
 void usage_general()
 {
-  ROS_INFO("Usage: sbig_client action [action arguments]. Action: capture; settemp; gettemp");
+  ROS_INFO("Usage: sbig_client action [action arguments]. Action: capture; settemp; gettemp; getcapstatus");
 }
 
 void usage_capture()

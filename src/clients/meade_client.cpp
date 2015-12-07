@@ -17,7 +17,6 @@
 */
 
 #include "ros/ros.h"
-#include "std_msgs/String.h"
 #include "ice_telescope/meade.h"
 #include <string.h>
 
@@ -50,10 +49,6 @@ void usage_latlon()
   ROS_INFO("Example: meade_client setlatlon 41.385 2.173");
 }
 
-void retryCallback(const std_msgs::String::ConstPtr& msg)
-{
-  ROS_ERROR(msg->data.c_str());
-}
 
 int main(int argc, char **argv)
 {
@@ -65,9 +60,7 @@ int main(int argc, char **argv)
   }
 
   ros::NodeHandle n;
-  ros::AsyncSpinner spinner(2);
   ros::ServiceClient client = n.serviceClient<ice_telescope::meade>("meade_action");
-  ros::Subscriber sub = n.subscribe("retry_meade", 5, retryCallback);
   ice_telescope::meade srv;
 
   // Action
@@ -115,8 +108,6 @@ int main(int argc, char **argv)
     srv.request.lat = atof(argv[2]);
     srv.request.lon = atof(argv[3]);
   }
-
-  spinner.start();
 
   if(client.call(srv))
   {

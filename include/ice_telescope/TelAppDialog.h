@@ -4,7 +4,6 @@
 // This prevents a MOC error with versions of boost >= 1.48
 #ifndef Q_MOC_RUN  // See: https://bugreports.qt-project.org/browse/QTBUG-22829
 #include <ros/ros.h>
-#include "std_msgs/String.h"
 #include <string.h>
 #endif
 
@@ -30,14 +29,10 @@ public:
   TelAppDialog();
   virtual ~TelAppDialog();
 
-signals:
-  void updateLog(QString str);
-
 private slots:
   void actionDome(QString action);
   void actionCCD(QString action);
   void actionTelescope(QString action);
-  void updateUILog(QString str);
 
 private:
   void createMenu();
@@ -49,15 +44,10 @@ private:
   bool isOnlyInt(const char* str);
   bool isOnlyDouble(const char* str);
 
-  void retryCallback(const std_msgs::String::ConstPtr& msg);
-
   ros::NodeHandle nh_;
   ros::ServiceClient domeClient;
   ros::ServiceClient ccdClient;
   ros::ServiceClient telescopeClient;
-  ros::Subscriber telescopeSub;
-  ros::Subscriber domeSub;
-  ros::AsyncSpinner spinner;
 
   QMenuBar *menuBar;
   QMenu *fileMenu;

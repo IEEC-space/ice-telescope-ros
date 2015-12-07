@@ -45,8 +45,9 @@ void dome_init_params()
 	targetShutter = SHUTTER_CLOSE;
 }
 
-bool dome_connect()
+bool dome_connect(int *in_fd)
 {
+  int portFD = -1;
 	int connectrc = 0;
 	char errorMsg[MAXRBUF];
 
@@ -59,10 +60,11 @@ bool dome_connect()
 		return false;
 	}
 
-	if(dome_ack())
+	if(dome_ack(portFD))
 	{
 		if(tty_debug) fprintf(stderr, "Dome is online\n");
 		domeStatus = DOME_READY;
+    *in_fd = portFD;
 		return true;
 	}
 
@@ -70,7 +72,7 @@ bool dome_connect()
 	return false;
 }
 
-bool dome_disconnect()
+bool dome_disconnect(int portFD)
 {
 	tty_disconnect(portFD);
 	domeStatus = DOME_UNKNOWN;
@@ -78,7 +80,7 @@ bool dome_disconnect()
 	return true;
 }
 
-bool dome_ack()
+bool dome_ack(int portFD)
 {
   	int nbytes_written=0, nbytes_read=0, rc=-1;
   	char errstr[MAXRBUF];
@@ -114,7 +116,7 @@ bool dome_ack()
     	return false;
 }
 
-bool dome_shutter_status()
+bool dome_shutter_status(int portFD)
 {
   	int nbytes_written=0, nbytes_read=0, rc=-1;
   	char errstr[MAXRBUF];
@@ -177,7 +179,7 @@ bool dome_shutter_status()
     	return false;
 }
 
-bool dome_control_shutter(ShutterOperation operation)
+bool dome_control_shutter(int portFD, ShutterOperation operation)
 {
   	int nbytes_written=0, nbytes_read=0, rc=-1;
   	char errstr[MAXRBUF];

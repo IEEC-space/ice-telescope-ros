@@ -17,7 +17,6 @@
 */
 
 #include "ice_telescope/meade.h"
-#include "std_msgs/String.h"
 #include <string>
 using namespace std;
 
@@ -31,21 +30,20 @@ public:
   bool meade_action(ice_telescope::meade::Request &req, ice_telescope::meade::Response &res);
 
 protected:
-  int retries;
-  ros::Publisher retry_pub;
-  std_msgs::String msg;
+  int portFD;
 
+  bool meade_reconnect();
   void meade_input(ice_telescope::meade::Request &req, string in_str);
   void meade_output(ice_telescope::meade::Response &res, string out_str, bool error);
-  void meade_action_gps(int portFD, ice_telescope::meade::Response &res);
-  void meade_action_getobjradec(int portFD, ice_telescope::meade::Response &res);
-  void meade_action_gettelradec(int portFD, ice_telescope::meade::Response &res);
-  void meade_action_getdatetime(int portFD, ice_telescope::meade::Response &res);
-  void meade_action_setdatetime(int portFD, ice_telescope::meade::Response &res);
-  void meade_action_getlatlon(int portFD, ice_telescope::meade::Response &res);
-  void meade_action_setlatlon(int portFD, ice_telescope::meade::Request &req, ice_telescope::meade::Response &res);
-  void meade_action_focus(int portFD, ice_telescope::meade::Request &req, ice_telescope::meade::Response &res);
-  void meade_action_goto(int portFD, ice_telescope::meade::Request &req, ice_telescope::meade::Response &res);
-  void meade_action_catalog(int portFD, ice_telescope::meade::Request &req, ice_telescope::meade::Response &res);
+  void meade_action_gps(ice_telescope::meade::Response &res);
+  void meade_action_getobjradec(ice_telescope::meade::Response &res);
+  void meade_action_gettelradec(ice_telescope::meade::Response &res);
+  void meade_action_getdatetime(ice_telescope::meade::Response &res);
+  void meade_action_setdatetime(ice_telescope::meade::Response &res);
+  void meade_action_getlatlon(ice_telescope::meade::Response &res);
+  void meade_action_setlatlon(ice_telescope::meade::Request &req, ice_telescope::meade::Response &res);
+  void meade_action_focus(ice_telescope::meade::Request &req, ice_telescope::meade::Response &res);
+  void meade_action_goto(ice_telescope::meade::Request &req, ice_telescope::meade::Response &res);
+  void meade_action_catalog(ice_telescope::meade::Request &req, ice_telescope::meade::Response &res);
 
 };

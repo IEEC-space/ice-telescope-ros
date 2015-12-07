@@ -30,14 +30,13 @@ typedef enum { SHUTTER_OPEN, SHUTTER_CLOSE } ShutterOperation;
 DomeStatus domeStatus;
 ShutterStatus shutterStatus;
 ShutterOperation targetShutter;
-int portFD;
 
 void dome_init_params();
-bool dome_connect();
-bool dome_disconnect();
-bool dome_ack();
-bool dome_shutter_status();
-bool dome_control_shutter(ShutterOperation operation);
+bool dome_connect(int *fd);
+bool dome_disconnect(int fd);
+bool dome_ack(int fd);
+bool dome_shutter_status(int fd);
+bool dome_control_shutter(int fd, ShutterOperation operation);
 const char * dome_get_shutter_status_string(ShutterStatus status);
 
 #endif

@@ -24,103 +24,92 @@ extern "C"
   #include "ice_telescope/lx200gps.h"
 }
 
-#define MAX_RETRIES 3
 
-MeadeTelescope::MeadeTelescope():
-retries(0)
+MeadeTelescope::MeadeTelescope()
+:portFD(-1)
 {
-  ros::NodeHandle n;
-  retry_pub = n.advertise<std_msgs::String>("retry_meade", 5);
+  ROS_INFO("Connecting to telescope");
+  if(!lx200_connect(&portFD))
+  {
+    ROS_ERROR("Telescope connection failed");
+  }
 }
 
 MeadeTelescope::~MeadeTelescope()
 {
+  lx200_disconnect(portFD);
+}
 
+bool MeadeTelescope::meade_reconnect()
+{
+  lx200_disconnect(portFD);
+  portFD = -1;
+  ROS_INFO("Connecting to telescope");
+  if(!lx200_connect(&portFD))
+  {
+    ROS_ERROR("Telescope connection failed");
+  }
 }
 
 bool MeadeTelescope::meade_action(ice_telescope::meade::Request &req, ice_telescope::meade::Response &res)
 {
-  int portFD = -1;
-
-  ROS_INFO("Connecting to telescope");
-  if(lx200_connect(&portFD))
+  if(req.meade_action == "gps")
   {
-    if(req.meade_action == "gps")
-    {
-      meade_input(req, NULL);
-      meade_action_gps(portFD, res);
-    }
-    else if(req.meade_action == "getobjradec")
-    {
-      meade_input(req, NULL);
-      meade_action_getobjradec(portFD, res);
-    }
-    else if(req.meade_action == "gettelradec")
-    {
-      meade_input(req, NULL);
-      meade_action_gettelradec(portFD, res);
-    }
-    else if(req.meade_action == "getdatetime")
-    {
-      meade_input(req, NULL);
-      meade_action_getdatetime(portFD, res);
-    }
-    else if(req.meade_action == "setdatetime")
-    {
-      meade_input(req, NULL);
-      meade_action_setdatetime(portFD, res);
-    }
-    else if(req.meade_action == "getlatlon")
-    {
-      meade_input(req, NULL);
-      meade_action_getlatlon(portFD, res);
-    }
-    else if(req.meade_action == "setlatlon")
-    {
-      meade_input(req, NULL);
-      meade_action_setlatlon(portFD, req, res);
-    }
-    else if(req.meade_action == "focus")
-    {
-      meade_input(req, req.focus_motion);
-      meade_action_focus(portFD, req, res);
-    }
-    else if(req.meade_action == "goto")
-    {
-      std::stringstream s;
-      s << "RA " << req.ra << " - DEC " << req.dec;
-      meade_input(req, s.str());
-      meade_action_goto(portFD, req, res);
-    }
-    else if(req.meade_action == "messier" || req.meade_action == "star" || req.meade_action == "deepsky")
-    {
-      std::stringstream s;
-      s << req.object_num; // gcc bug where std::to_string() is not found
-      meade_input(req, s.str());
-      meade_action_catalog(portFD, req, res);
-    }
-    else
-    {
-      meade_output(res, "Invalid telescope action", true);
-    }
-
-    lx200_disconnect(portFD);
+    meade_input(req, "");
+    meade_action_gps(res);
+  }
+  else if(req.meade_action == "getobjradec")
+  {
+    meade_input(req, "");
+    meade_action_getobjradec(res);
+  }
+  else if(req.meade_action == "gettelradec")
+  {
+    meade_input(req, "");
+    meade_action_gettelradec(res);
+  }
+  else if(req.meade_action == "getdatetime")
+  {
+    meade_input(req, "");
+    meade_action_getdatetime(res);
+  }
+  else if(req.meade_action == "setdatetime")
+  {
+    meade_input(req, "");
+    meade_action_setdatetime(res);
+  }
+  else if(req.meade_action == "getlatlon")
+  {
+    meade_input(req, "");
+    meade_action_getlatlon(res);
+  }
+  else if(req.meade_action == "setlatlon")
+  {
+    meade_input(req, "");
+    meade_action_setlatlon(req, res);
+  }
+  else if(req.meade_action == "focus")
+  {
+    meade_input(req, req.focus_motion);
+    meade_action_focus(req, res);
+  }
+  else if(req.meade_action == "goto")
+  {
+    std::stringstream s;
+    s << "RA " << req.ra << " - DEC " << req.dec;
+    meade_input(req, s.str());
+    meade_action_goto(req, res);
+  }
+  else if(req.meade_action == "messier" || req.meade_action == "star" || req.meade_action == "deepsky")
+  {
+    std::stringstream s;
+    s << req.object_num; // gcc bug where std::to_string() is not found
+    meade_input(req, s.str());
+    meade_action_catalog(req, res);
   }
   else
   {
-    if(retries < (MAX_RETRIES-1))
-    {
-      retries++;
-      msg.data = "Telescope connection failed. Retrying...";
-      ROS_ERROR(msg.data.c_str());
-      retry_pub.publish(msg);
-      meade_action(req, res);
-    }
-    else
-    {
-      meade_output(res, "Telescope connection failed", true);
-      retries = 0;
-    }
+    meade_output(res, "Invalid telescope action", true);
   }
 
   return true;
@@ -152,7 +141,7 @@ void MeadeTelescope::meade_output(ice_telescope::meade::Response &res, string ou
   }
 }
 
-void MeadeTelescope::meade_action_gps(int portFD, ice_telescope::meade::Response &res)
+void MeadeTelescope::meade_action_gps(ice_telescope::meade::Response &res)
 {
   gpsRestart(portFD);
   updateGPS_System(portFD);
@@ -160,7 +149,7 @@ void MeadeTelescope::meade_action_gps(int portFD, ice_telescope::meade::Response
   meade_output(res, "Updating gps", false);
 }
 
-void MeadeTelescope::meade_action_getobjradec(int portFD, ice_telescope::meade::Response &res)
+void MeadeTelescope::meade_action_getobjradec(ice_telescope::meade::Response &res)
 {
   double obj_ra, obj_dec;
 
@@ -176,7 +165,7 @@ void MeadeTelescope::meade_action_getobjradec(int portFD, ice_telescope::meade::
   }
 }
 
-void MeadeTelescope::meade_action_gettelradec(int portFD, ice_telescope::meade::Response &res)
+void MeadeTelescope::meade_action_gettelradec(ice_telescope::meade::Response &res)
 {
   double lx_ra, lx_dec;
 
@@ -192,7 +181,7 @@ void MeadeTelescope::meade_action_gettelradec(int portFD, ice_telescope::meade::
   }
 }
 
-void MeadeTelescope::meade_action_getdatetime(int portFD, ice_telescope::meade::Response &res)
+void MeadeTelescope::meade_action_getdatetime(ice_telescope::meade::Response &res)
 {
   char ltime[64];
   char date[64];
@@ -209,7 +198,7 @@ void MeadeTelescope::meade_action_getdatetime(int portFD, ice_telescope::meade::
   }
 }
 
-void MeadeTelescope::meade_action_setdatetime(int portFD, ice_telescope::meade::Response &res)
+void MeadeTelescope::meade_action_setdatetime(ice_telescope::meade::Response &res)
 {
   struct tm* pTm;
   struct timeval tv;
@@ -228,7 +217,7 @@ void MeadeTelescope::meade_action_setdatetime(int portFD, ice_telescope::meade::
   }
 }
 
-void MeadeTelescope::meade_action_getlatlon(int portFD, ice_telescope::meade::Response &res)
+void MeadeTelescope::meade_action_getlatlon(ice_telescope::meade::Response &res)
 {
   int dd, mm;
   int ddd, mmm;
@@ -245,7 +234,7 @@ void MeadeTelescope::meade_action_getlatlon(int portFD, ice_telescope::meade::Re
   }
 }
 
-void MeadeTelescope::meade_action_setlatlon(int portFD, ice_telescope::meade::Request &req, ice_telescope::meade::Response &res)
+void MeadeTelescope::meade_action_setlatlon(ice_telescope::meade::Request &req, ice_telescope::meade::Response &res)
 {
   if(setSiteLatitude(portFD, req.lat) == 0 && setSiteLongitude(portFD, req.lon) == 0)
   {
@@ -259,7 +248,7 @@ void MeadeTelescope::meade_action_setlatlon(int portFD, ice_telescope::meade::Re
   }
 }
 
-void MeadeTelescope::meade_action_focus(int portFD, ice_telescope::meade::Request &req, ice_telescope::meade::Response &res)
+void MeadeTelescope::meade_action_focus(ice_telescope::meade::Request &req, ice_telescope::meade::Response &res)
 {
   // int motion_type;
 
@@ -288,7 +277,7 @@ void MeadeTelescope::meade_action_focus(int portFD, ice_telescope::meade::Reques
   // }
 }
 
-void MeadeTelescope::meade_action_goto(int portFD, ice_telescope::meade::Request &req, ice_telescope::meade::Response &res)
+void MeadeTelescope::meade_action_goto(ice_telescope::meade::Request &req, ice_telescope::meade::Response &res)
 {
   char* return_msg;
 
@@ -303,7 +292,7 @@ void MeadeTelescope::meade_action_goto(int portFD, ice_telescope::meade::Request
   }
 }
 
-void MeadeTelescope::meade_action_catalog(int portFD, ice_telescope::meade::Request &req, ice_telescope::meade::Response &res)
+void MeadeTelescope::meade_action_catalog(ice_telescope::meade::Request &req, ice_telescope::meade::Response &res)
 {
   int catalog = 0;
   int err = 0;

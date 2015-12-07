@@ -20,6 +20,7 @@
 #include "ice_telescope/lpardrv.h"
 #include "ice_telescope/csbigcam.h"
 #include "ice_telescope/csbigimg.h"
+    #include <boost/thread/mutex.hpp>
 #include <string>
 using namespace std;
 
@@ -33,10 +34,20 @@ public:
   bool sbig_action(ice_telescope::sbig::Request &req, ice_telescope::sbig::Response &res);
 
 protected:
+  bool sbig_connect();
+  bool sbig_disconnect();
+  bool sbig_reconnect();
   void sbig_input(ice_telescope::sbig::Request &req);
   void sbig_output(ice_telescope::sbig::Response &res, CSBIGCam* pCam, string out_str, bool error, PAR_ERROR err);
   void sbig_action_gettemp(ice_telescope::sbig::Response &res, CSBIGCam* pCam, PAR_ERROR err);
+  void sbig_action_getcapstatus(ice_telescope::sbig::Response &res, CSBIGCam* pCam);
   void sbig_action_settemp(ice_telescope::sbig::Request &req, ice_telescope::sbig::Response &res, CSBIGCam* pCam, PAR_ERROR err);
   void sbig_action_capture(ice_telescope::sbig::Request &req, ice_telescope::sbig::Response &res, CSBIGCam* pCam, CSBIGImg* pImg, PAR_ERROR err);
+
+private:
+  CSBIGImg* pImg;
+  CSBIGCam* pCam;
+  PAR_ERROR err;
+  static boost::mutex mutex;
 
 };
