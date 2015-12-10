@@ -105,7 +105,7 @@ the Meade LX200GPS Telescope.
     rosrun ice_telescope meade_client action [params]
     rosrun ice_telescope meade_client.py action [params]
 
-    **Note:** To run more than one meade_client node at the same time it is necessary to specify a name for the node in the above commands as follows [__name:=DesiredName]
+**Note:** To run more than one meade_client node at the same time it is necessary to specify a name for the node in the above commands as follows [__name:=DesiredName]
 
 ### Options
 
@@ -197,7 +197,7 @@ SBIG ST-7 CCD.
     rosrun ice_telescope sbig_client action [params]
     rosrun ice_telescope sbig_client.py action [params]
 
-    **Note:** To run more than one sbig_client node at the same time it is necessary to specify a name for the node in the above commands as follows [__name:=DesiredName]
+**Note:** To run more than one sbig_client node at the same time it is necessary to specify a name for the node in the above commands as follows [__name:=DesiredName]
 
 ### Options
 
@@ -267,7 +267,7 @@ Baader Planetarium Dome.
     rosrun ice_telescope baader_client action
     rosrun ice_telescope baader_client.py action
 
-    **Note:** To run more than one baader_client node at the same time it is necessary to specify a name for the node in the above commands as follows [__name:=DesiredName]
+**Note:** To run more than one baader_client node at the same time it is necessary to specify a name for the node in the above commands as follows [__name:=DesiredName]
 
 ### Options
 
