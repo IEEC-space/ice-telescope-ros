@@ -21,7 +21,7 @@ import rospy
 from ice_telescope.srv import *
 
 def usage_general():
-    rospy.loginfo("Usage: meade_client action [action arguments]. Action: goto; messier; star; deepsky; focus; gps; getobjradec; gettelradec; getdatetime; setdatetime; setlatlon; getlatlon")
+    rospy.loginfo("Usage: meade_client action [action arguments]. Action: goto; messier; star; deepsky; focus; gps; getobjradec; gettelradec; getdatetime; setdatetime; setlatlon; getlatlon; reconnect")
 
 def usage_goto():
     rospy.loginfo("Usage: meade_client goto ra dec")

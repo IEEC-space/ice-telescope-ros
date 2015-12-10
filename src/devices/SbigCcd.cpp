@@ -23,7 +23,14 @@
 SbigCcd::SbigCcd()
 :err(CE_NO_ERROR)
 {
-  sbig_connect();
+  if(sbig_connect())
+  {
+    ROS_INFO("Ready to control CCD");
+  }
+  else
+  {
+    ROS_ERROR("CCD connection failed. Check power and retry");
+  }
 }
 
 SbigCcd::~SbigCcd()
@@ -60,17 +67,15 @@ bool SbigCcd::sbig_connect()
 bool SbigCcd::sbig_disconnect()
 {
   // Close sbig device
-  if((err = pCam->CloseDevice()) != CE_NO_ERROR)
+  if(pCam && (err = pCam->CloseDevice()) != CE_NO_ERROR)
   {
     ROS_ERROR("CSBIGCam error: %s", pCam->GetErrorString(err).c_str());
-    return false;
   }
 
   // Close sbig driver
-  if((err = pCam->CloseDriver()) != CE_NO_ERROR)
+  if(pCam && (err = pCam->CloseDriver()) != CE_NO_ERROR)
   {
     ROS_ERROR("CSBIGCam error: %s", pCam->GetErrorString(err).c_str());
-    return false;
   }
 
   // Delete objects
@@ -91,9 +96,9 @@ bool SbigCcd::sbig_reconnect()
 {
   err = CE_NO_ERROR;
 
-  if(sbig_disconnect())
-    if(sbig_connect())
-      return true;
+  sbig_disconnect();
+  if(sbig_connect())
+    return true;
 
   return false;
 }
@@ -117,6 +122,17 @@ bool SbigCcd::sbig_action(ice_telescope::sbig::Request &req, ice_telescope::sbig
   else if(req.sbig_action == "capture")
   {
     sbig_action_capture(req, res, pCam, pImg, err);
+  }
+  else if(req.sbig_action == "reconnect")
+  {
+    if(sbig_reconnect())
+    {
+      sbig_output(res, NULL, "Ready to control CCD", false, CE_NO_ERROR);
+    }
+    else
+    {
+      sbig_output(res, NULL, "CCD connection failed. Check power and retry", true, CE_NO_ERROR);
+    }
   }
   else
   {

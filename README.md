@@ -105,6 +105,8 @@ the Meade LX200GPS Telescope.
     rosrun ice_telescope meade_client action [params]
     rosrun ice_telescope meade_client.py action [params]
 
+    **Note:** To run more than one meade_client node at the same time it is necessary to specify a name for the node in the above commands as follows [__name:=DesiredName]
+
 ### Options
 
 The **action** parameter is the command to be sent to the server. The
@@ -179,6 +181,13 @@ Set the telescope's latitude and longitude.
 
 Move the telescope's focus (in/out). WORK IN PROGRESS.
 
+**reconnect**
+
+Re-establish telescope connection.
+
+    rosrun ice_telescope meade_client reconnect
+
+
 CCD client
 ----------
 
@@ -187,6 +196,8 @@ SBIG ST-7 CCD.
 
     rosrun ice_telescope sbig_client action [params]
     rosrun ice_telescope sbig_client.py action [params]
+
+    **Note:** To run more than one sbig_client node at the same time it is necessary to specify a name for the node in the above commands as follows [__name:=DesiredName]
 
 ### Options
 
@@ -240,6 +251,13 @@ Query the CCD capture status. The server returns the exposure progress percentag
 
     rosrun ice_telescope sbig_client getcapstatus
 
+**reconnect**
+
+Re-establish CCD connection.
+
+    rosrun ice_telescope sbig_client reconnect
+
+
 Dome client
 -----------
 
@@ -248,6 +266,8 @@ Baader Planetarium Dome.
 
     rosrun ice_telescope baader_client action
     rosrun ice_telescope baader_client.py action
+
+    **Note:** To run more than one baader_client node at the same time it is necessary to specify a name for the node in the above commands as follows [__name:=DesiredName]
 
 ### Options
 
@@ -272,6 +292,12 @@ Query the dome status. The possible states for the dome are: open,
 closed, moving and unknown.
 
     rosrun ice_telescope baader_client status
+
+**reconnect**
+
+Re-establish dome connection.
+
+    rosrun ice_telescope baader_client reconnect
 
 Files
 -----

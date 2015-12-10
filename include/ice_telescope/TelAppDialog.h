@@ -33,6 +33,7 @@ private slots:
   void actionDome(QString action);
   void actionCCD(QString action);
   void actionTelescope(QString action);
+  void actionReconnect(QString action);
 
 private:
   void createMenu();

@@ -22,7 +22,7 @@
 
 void usage_general()
 {
-  ROS_INFO("Usage: meade_client action [action arguments]. Action: goto; messier; star; deepsky; focus; gps; getobjradec; gettelradec; getdatetime; setdatetime; setlatlon; getlatlon");
+  ROS_INFO("Usage: meade_client action [action arguments]. Action: goto; messier; star; deepsky; focus; gps; getobjradec; gettelradec; getdatetime; setdatetime; setlatlon; getlatlon; reconnect");
 }
 
 void usage_goto()

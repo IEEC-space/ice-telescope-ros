@@ -26,7 +26,7 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "baader_client");
   if(argc != 2)
   {
-    ROS_INFO("Usage: baader_client action. Action: open; close; status");
+    ROS_INFO("Usage: baader_client action. Action: open; close; status; reconnect");
     return 1;
   }
 

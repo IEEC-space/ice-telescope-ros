@@ -124,7 +124,9 @@ The telescope client issues the user's desired actions to perform with the Meade
 
 \Prog{rosrun} \Prog{ice\_telescope} \Prog{meade\_client} \Arg{action} \oOpt{params} 
 
-\Prog{rosrun} \Prog{ice\_telescope} \Prog{meade\_client.py} \Arg{action} \oOpt{params} 
+\Prog{rosrun} \Prog{ice\_telescope} \Prog{meade\_client.py} \Arg{action} \oOpt{params} \\
+
+\textbf{Note:} To run more than one \Prog{meade\_client} node at the same time it is necessary to specify a name for the node in the above commands as follows \oOpt{\_\_name:=DesiredName}
 
 
 \subsection{Options}
@@ -188,6 +190,10 @@ The \Arg{action} parameter is the command to be sent to the server. The \Arg{act
 	\end{itemize}
 	
 \item[\Arg{focus}] Move the telescope's focus (in/out). WORK IN PROGRESS.
+
+\item[\Arg{reconnect}] Re-establish telescope connection.
+
+	\Prog{rosrun} \Prog{ice\_telescope} \Prog{meade\_client} \Arg{reconnect}
 	
 \end{Description}
 
@@ -199,7 +205,9 @@ The CCD client issues the user's desired actions to perform with the SBIG ST-7 C
 
 \Prog{rosrun} \Prog{ice\_telescope} \Prog{sbig\_client} \Arg{action} \oOpt{params} 
 
-\Prog{rosrun} \Prog{ice\_telescope} \Prog{sbig\_client.py} \Arg{action} \oOpt{params} 
+\Prog{rosrun} \Prog{ice\_telescope} \Prog{sbig\_client.py} \Arg{action} \oOpt{params} \\
+
+\textbf{Note:} To run more than one \Prog{sbig\_client} node at the same time it is necessary to specify a name for the node in the above commands as follows \oOpt{\_\_name:=DesiredName}
 
 
 \subsection{Options}
@@ -247,6 +255,10 @@ The \Arg{action} parameter is the command to be sent to the server. The \Arg{act
 
 	\Prog{rosrun} \Prog{ice\_telescope} \Prog{sbig\_client} \Arg{getcapstatus}
 	
+\item[\Arg{reconnect}] Re-establish CCD connection.
+
+	\Prog{rosrun} \Prog{ice\_telescope} \Prog{sbig\_client} \Arg{reconnect}
+	
 \end{Description}
 
 
@@ -257,7 +269,9 @@ The dome client issues the user's desired actions to perform with the Baader Pla
 
 \Prog{rosrun} \Prog{ice\_telescope} \Prog{baader\_client} \Arg{action}
 
-\Prog{rosrun} \Prog{ice\_telescope} \Prog{baader\_client.py} \Arg{action}
+\Prog{rosrun} \Prog{ice\_telescope} \Prog{baader\_client.py} \Arg{action} \\
+
+\textbf{Note:} To run more than one \Prog{baader\_client} node at the same time it is necessary to specify a name for the node in the above commands as follows \oOpt{\_\_name:=DesiredName}
 
 
 \subsection{Options}
@@ -265,7 +279,7 @@ The dome client issues the user's desired actions to perform with the Baader Pla
 
 The \Arg{action} parameter is the command to be sent to the server. The \Arg{action} can be one of the following:
 
-\begin{Description}[\Arg{action}]\setlength{\itemsep}{0cm}
+\begin{Description}[\Arg{reconnect}]\setlength{\itemsep}{0cm}
 \item[\Arg{open}] Open the dome. 
 
 	\Prog{rosrun} \Prog{ice\_telescope} \Prog{baader\_client} \Arg{open}
@@ -277,6 +291,10 @@ The \Arg{action} parameter is the command to be sent to the server. The \Arg{act
 \item[\Arg{status}] Query the dome status. The possible states for the dome are: open, closed, moving and unknown.
 
 	\Prog{rosrun} \Prog{ice\_telescope} \Prog{baader\_client} \Arg{status}
+	
+\item[\Arg{reconnect}] Re-establish dome connection.
+
+	\Prog{rosrun} \Prog{ice\_telescope} \Prog{baader\_client} \Arg{reconnect}
 	
 \end{Description}
 

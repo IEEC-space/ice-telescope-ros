@@ -27,7 +27,6 @@ int main(int argc, char **argv)
   // Telescope service
   MeadeTelescope meadeTelescope;
   ros::ServiceServer meadeService = n.advertiseService("meade_action", &MeadeTelescope::meade_action, &meadeTelescope);
-  ROS_INFO("Ready to control telescope");
 
   ros::spin();
 

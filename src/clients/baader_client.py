@@ -21,7 +21,7 @@ import rospy
 from ice_telescope.srv import *
 
 def usage():
-    return "Usage: baader_client action. Action: open; close; status"
+    return "Usage: baader_client action. Action: open; close; status; reconnect"
 
 def baader_action_client(action):
     rospy.wait_for_service('baader_action')

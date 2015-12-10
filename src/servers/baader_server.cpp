@@ -27,7 +27,6 @@ int main(int argc, char **argv)
   // Dome service
   BaaderDome baaderDome;
   ros::ServiceServer baaderService = n.advertiseService("baader_action", &BaaderDome::baader_action, &baaderDome);
-  ROS_INFO("Ready to control dome");
 
   ros::spin();
 

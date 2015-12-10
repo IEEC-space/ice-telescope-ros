@@ -35,6 +35,12 @@ TelAppDialog::TelAppDialog()
   createGridGroupBoxCCD();
   createGridGroupBoxTelescope();
 
+  QPushButton *buttonReconnect = new QPushButton(tr("RECONNECT"));
+  QSignalMapper *signalMapper = new QSignalMapper(this);
+  signalMapper->setMapping(buttonReconnect, QString("reconnect"));
+  connect(buttonReconnect, SIGNAL(clicked()), signalMapper, SLOT(map()));
+  connect(signalMapper, SIGNAL(mapped(QString)), this, SLOT(actionReconnect(QString)));
+
   QGridLayout *mainLayout = new QGridLayout;
   mainLayout->setMenuBar(menuBar);
   mainLayout->setColumnMinimumWidth(1, 700);
@@ -43,10 +49,11 @@ TelAppDialog::TelAppDialog()
   mainLayout->setRowStretch(0, 15);
   mainLayout->setRowStretch(1, 30);
   mainLayout->setRowStretch(2, 80);
-  mainLayout->addWidget(logDisplayBox, 0, 1, 3, 1);
+  mainLayout->addWidget(logDisplayBox, 0, 1, 4, 1);
   mainLayout->addWidget(horizontalGroupBoxDome, 0, 0);
   mainLayout->addWidget(gridGroupBoxCCD, 1, 0);
   mainLayout->addWidget(gridGroupBoxTelescope, 2, 0);
+  mainLayout->addWidget(buttonReconnect, 3, 0);
   setLayout(mainLayout);
 
   setWindowFlags(Qt::CustomizeWindowHint | Qt::WindowCloseButtonHint | Qt::WindowMinimizeButtonHint | Qt::WindowMaximizeButtonHint);
@@ -122,6 +129,7 @@ void TelAppDialog::createGridGroupBoxCCD()
   QPushButton *buttonCCDCapture = new QPushButton(tr("CAPTURE"));
   QPushButton *buttonCCDSetTemp = new QPushButton(tr("SET TEMP."));
   QPushButton *buttonCCDGetTemp = new QPushButton(tr("GET TEMP."));
+  QPushButton *buttonCCDCapStat = new QPushButton(tr("GET CAP. STAT."));
 
   textEditCCDCapture = new QLineEdit();
   textEditCCDCapture->setPlaceholderText(tr("Exposure in seconds"));
@@ -136,6 +144,7 @@ void TelAppDialog::createGridGroupBoxCCD()
   layout->addWidget(textEditCCDSetTemp, 1, 1);
   layout->addWidget(checkBoxCCDSetTemp, 1, 2);
   layout->addWidget(buttonCCDGetTemp, 2, 0);
+  layout->addWidget(buttonCCDCapStat, 3, 0);
 
   gridGroupBoxCCD->setLayout(layout);
 
@@ -143,10 +152,12 @@ void TelAppDialog::createGridGroupBoxCCD()
   signalMapper->setMapping(buttonCCDCapture, QString("capture"));
   signalMapper->setMapping(buttonCCDSetTemp, QString("settemp"));
   signalMapper->setMapping(buttonCCDGetTemp, QString("gettemp"));
+  signalMapper->setMapping(buttonCCDCapStat, QString("getcapstatus"));
 
   connect(buttonCCDCapture, SIGNAL(clicked()), signalMapper, SLOT(map()));
   connect(buttonCCDSetTemp, SIGNAL(clicked()), signalMapper, SLOT(map()));
   connect(buttonCCDGetTemp, SIGNAL(clicked()), signalMapper, SLOT(map()));
+  connect(buttonCCDCapStat, SIGNAL(clicked()), signalMapper, SLOT(map()));
 
   connect(signalMapper, SIGNAL(mapped(QString)), this, SLOT(actionCCD(QString)));
 }
@@ -236,6 +247,92 @@ void TelAppDialog::createGridGroupBoxTelescope()
   connect(buttonTelGetLatLon, SIGNAL(clicked()), signalMapper, SLOT(map()));
 
   connect(signalMapper, SIGNAL(mapped(QString)), this, SLOT(actionTelescope(QString)));
+}
+
+void TelAppDialog::actionReconnect(QString action)
+{
+  ice_telescope::baader domeSrv;
+  ice_telescope::sbig ccdSrv;
+  ice_telescope::meade telSrv;
+
+  time_t now = time(0);
+  std::string dt(ctime(&now));
+  std::stringstream s;
+
+  domeSrv.request.baader_action = ccdSrv.request.sbig_action = telSrv.request.meade_action = action.toStdString();
+  
+  if(domeClient.call(domeSrv))
+  {
+    s << "[" << dt.substr(0, dt.length()-1) << "]: " << domeSrv.response.baader_response.c_str() << std::endl;
+
+    if (domeSrv.response.baader_error)
+    {
+      ROS_ERROR(domeSrv.response.baader_response.c_str());
+    }
+    else
+    {
+      ROS_INFO(domeSrv.response.baader_response.c_str());
+    }
+  }
+  else
+  {
+    s << "[" << dt.substr(0, dt.length()-1) << "]: Failed to call dome service" << std::endl;
+    
+    ROS_ERROR("Failed to call dome service");
+  }
+
+  logTextDisplay->moveCursor(QTextCursor::Start);
+  logTextDisplay->insertPlainText(s.str().c_str());
+  s.str("");
+  s.clear();
+
+  if(ccdClient.call(ccdSrv))
+  {
+    s << "[" << dt.substr(0, dt.length()-1) << "]: " << ccdSrv.response.sbig_response.c_str() << std::endl;
+
+    if(ccdSrv.response.sbig_error)
+    {
+      ROS_ERROR(ccdSrv.response.sbig_response.c_str());
+    }
+    else
+    {
+      ROS_INFO(ccdSrv.response.sbig_response.c_str());
+    }
+  }
+  else
+  {
+    s << "[" << dt.substr(0, dt.length()-1) << "]: Failed to call ccd service" << std::endl;
+
+    ROS_ERROR("Failed to call ccd service");
+  }
+
+  logTextDisplay->moveCursor(QTextCursor::Start);
+  logTextDisplay->insertPlainText(s.str().c_str());
+  s.str("");
+  s.clear();
+
+  if(telescopeClient.call(telSrv))
+  {
+    s << "[" << dt.substr(0, dt.length()-1) << "]: " << telSrv.response.meade_response.c_str() << std::endl;
+
+    if (telSrv.response.meade_error)
+    {
+      ROS_ERROR(telSrv.response.meade_response.c_str());
+    }
+    else
+    {
+      ROS_INFO(telSrv.response.meade_response.c_str());
+    }
+  }
+  else
+  {
+    s << "[" << dt.substr(0, dt.length()-1) << "]: Failed to call telescope service" << std::endl;
+
+    ROS_ERROR("Failed to call telescope service");
+  }
+
+  logTextDisplay->moveCursor(QTextCursor::Start);
+  logTextDisplay->insertPlainText(s.str().c_str());
 }
 
 void TelAppDialog::actionDome(QString action)

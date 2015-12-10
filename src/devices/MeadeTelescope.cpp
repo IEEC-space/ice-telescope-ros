@@ -29,9 +29,13 @@ MeadeTelescope::MeadeTelescope()
 :portFD(-1)
 {
   ROS_INFO("Connecting to telescope");
-  if(!lx200_connect(&portFD))
+  if(lx200_connect(&portFD))
   {
-    ROS_ERROR("Telescope connection failed");
+    ROS_INFO("Ready to control telescope");
+  }
+  else
+  {
+    ROS_ERROR("Telescope connection failed. Check power and retry");
   }
 }
 
@@ -45,10 +49,10 @@ bool MeadeTelescope::meade_reconnect()
   lx200_disconnect(portFD);
   portFD = -1;
   ROS_INFO("Connecting to telescope");
-  if(!lx200_connect(&portFD))
-  {
-    ROS_ERROR("Telescope connection failed");
-  }
+  if(lx200_connect(&portFD))
+    return true;
+
+  return false;
 }
 
 bool MeadeTelescope::meade_action(ice_telescope::meade::Request &req, ice_telescope::meade::Response &res)
@@ -106,6 +110,18 @@ bool MeadeTelescope::meade_action(ice_telescope::meade::Request &req, ice_telesc
     s << req.object_num; // gcc bug where std::to_string() is not found
     meade_input(req, s.str());
     meade_action_catalog(req, res);
+  }
+  else if(req.meade_action == "reconnect")
+  {
+    meade_input(req, "");
+    if(meade_reconnect())
+    {
+      meade_output(res, "Ready to control telescope", false);
+    }
+    else
+    {
+      meade_output(res, "Telescope connection failed. Check power and retry", true);
+    }
   }
   else
   {

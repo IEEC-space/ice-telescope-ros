@@ -30,17 +30,14 @@ int main(int argc, char **argv)
   // Dome service
   BaaderDome baaderDome;
   ros::ServiceServer baaderService = n.advertiseService("baader_action", &BaaderDome::baader_action, &baaderDome);
-  ROS_INFO("Ready to control dome");
 
   // Telescope service
   MeadeTelescope meadeTelescope;
   ros::ServiceServer meadeService = n.advertiseService("meade_action", &MeadeTelescope::meade_action, &meadeTelescope);
-  ROS_INFO("Ready to control telescope");
 
   // CCD service
   SbigCcd sbigCcd;
   ros::ServiceServer sbigService = n.advertiseService("sbig_action", &SbigCcd::sbig_action, &sbigCcd);
-  ROS_INFO("Ready to control ccd");
 
   spinner.start();
   ros::waitForShutdown();

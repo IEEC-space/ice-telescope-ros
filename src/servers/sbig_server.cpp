@@ -27,7 +27,6 @@ int main(int argc, char **argv)
   // CCD service
   SbigCcd sbigCcd;
   ros::ServiceServer sbigService = n.advertiseService("sbig_action", &SbigCcd::sbig_action, &sbigCcd);
-  ROS_INFO("Ready to control ccd");
 
   ros::spin();
 
