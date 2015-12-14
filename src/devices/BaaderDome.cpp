@@ -44,20 +44,33 @@ BaaderDome::~BaaderDome()
   dome_disconnect(portFD);
 }
 
-bool BaaderDome::baader_reconnect()
+bool BaaderDome::baader_reconnect(ice_telescope::baader::Response &res)
 {
   dome_disconnect(portFD);
   portFD = -1;
   ROS_INFO("Connecting to dome");
   if(dome_connect(&portFD))
+  {
+    baader_output(res, "Ready to control dome", false);
     return true;
+  }
 
+  baader_output(res, "Dome connection failed. Check power and retry", true);
   return false;
 }
 
 bool BaaderDome::baader_action(ice_telescope::baader::Request &req, ice_telescope::baader::Response &res)
 {
   baader_input(req);
+
+  if(!dome_ack(portFD))
+  {
+    ROS_ERROR("Dome disconnected");
+    if(baader_reconnect(res))
+    {
+      return true;
+    }
+  }
 
   if(req.baader_action == "open")
   {
@@ -73,14 +86,7 @@ bool BaaderDome::baader_action(ice_telescope::baader::Request &req, ice_telescop
   }
   else if(req.baader_action == "reconnect")
   {
-    if(baader_reconnect())
-    {
-      baader_output(res, "Ready to control dome", false);
-    }
-    else
-    {
-      baader_output(res, "Dome connection failed. Check power and retry", true);
-    }
+    baader_reconnect(res);
   }
   else
   {

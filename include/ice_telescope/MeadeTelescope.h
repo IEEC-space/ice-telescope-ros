@@ -32,7 +32,7 @@ public:
 protected:
   int portFD;
 
-  bool meade_reconnect();
+  bool meade_reconnect(ice_telescope::meade::Response &res);
   void meade_input(ice_telescope::meade::Request &req, string in_str);
   void meade_output(ice_telescope::meade::Response &res, string out_str, bool error);
   void meade_action_gps(ice_telescope::meade::Response &res);

@@ -32,7 +32,7 @@ public:
 protected:
   int portFD;
 
-  bool baader_reconnect();
+  bool baader_reconnect(ice_telescope::baader::Response &res);
   void baader_input(ice_telescope::baader::Request &req);
   void baader_output(ice_telescope::baader::Response &res, string out_str, bool error);
   void baader_action_open(ice_telescope::baader::Response &res);

@@ -35,7 +35,7 @@ public:
 protected:
   bool sbig_connect();
   bool sbig_disconnect();
-  bool sbig_reconnect();
+  bool sbig_reconnect(ice_telescope::sbig::Response &res);
   void sbig_input(ice_telescope::sbig::Request &req);
   void sbig_output(ice_telescope::sbig::Response &res, CSBIGCam* pCam, string out_str, bool error, PAR_ERROR err);
   void sbig_action_gettemp(ice_telescope::sbig::Response &res, CSBIGCam* pCam, PAR_ERROR err);

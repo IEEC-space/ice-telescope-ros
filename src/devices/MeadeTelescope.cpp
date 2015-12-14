@@ -44,19 +44,32 @@ MeadeTelescope::~MeadeTelescope()
   lx200_disconnect(portFD);
 }
 
-bool MeadeTelescope::meade_reconnect()
+bool MeadeTelescope::meade_reconnect(ice_telescope::meade::Response &res)
 {
   lx200_disconnect(portFD);
   portFD = -1;
   ROS_INFO("Connecting to telescope");
   if(lx200_connect(&portFD))
+  {
+    meade_output(res, "Ready to control telescope", false);
     return true;
+  }
 
+  meade_output(res, "Telescope connection failed. Check power and retry", true);
   return false;
 }
 
 bool MeadeTelescope::meade_action(ice_telescope::meade::Request &req, ice_telescope::meade::Response &res)
 {
+  if(check_lx200_connection(portFD))
+  {
+    ROS_ERROR("Telescope disconnected");
+    if(!meade_reconnect(res))
+    {
+      return true;
+    }
+  }
+
   if(req.meade_action == "gps")
   {
     meade_input(req, "");
@@ -114,14 +127,7 @@ bool MeadeTelescope::meade_action(ice_telescope::meade::Request &req, ice_telesc
   else if(req.meade_action == "reconnect")
   {
     meade_input(req, "");
-    if(meade_reconnect())
-    {
-      meade_output(res, "Ready to control telescope", false);
-    }
-    else
-    {
-      meade_output(res, "Telescope connection failed. Check power and retry", true);
-    }
+    meade_reconnect(res);
   }
   else
   {

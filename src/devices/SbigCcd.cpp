@@ -92,20 +92,33 @@ bool SbigCcd::sbig_disconnect()
   return true;
 }
 
-bool SbigCcd::sbig_reconnect()
+bool SbigCcd::sbig_reconnect(ice_telescope::sbig::Response &res)
 {
   err = CE_NO_ERROR;
 
   sbig_disconnect();
   if(sbig_connect())
+  {
+    sbig_output(res, NULL, "Ready to control CCD", false, CE_NO_ERROR);
     return true;
+  }
 
+  sbig_output(res, NULL, "CCD connection failed. Check power and retry", true, CE_NO_ERROR);
   return false;
 }
 
 bool SbigCcd::sbig_action(ice_telescope::sbig::Request &req, ice_telescope::sbig::Response &res)
 {
   sbig_input(req);
+
+  if(pCam->CheckLink() == FALSE)
+  {
+    ROS_ERROR("CCD disconnected");
+    if(!sbig_reconnect(res))
+    {
+      return true;
+    }
+  }
 
   if(req.sbig_action == "gettemp")
   {
@@ -125,14 +138,7 @@ bool SbigCcd::sbig_action(ice_telescope::sbig::Request &req, ice_telescope::sbig
   }
   else if(req.sbig_action == "reconnect")
   {
-    if(sbig_reconnect())
-    {
-      sbig_output(res, NULL, "Ready to control CCD", false, CE_NO_ERROR);
-    }
-    else
-    {
-      sbig_output(res, NULL, "CCD connection failed. Check power and retry", true, CE_NO_ERROR);
-    }
+    sbig_reconnect(res);
   }
   else
   {

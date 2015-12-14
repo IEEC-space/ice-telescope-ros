@@ -1486,7 +1486,7 @@ string CSBIGCam::GetErrorString()
 */
 MY_LOGICAL CSBIGCam::CheckLink(void)
 {
-	if ( m_eCameraType != NO_CAMERA || EstablishLink() == CE_NO_ERROR )
+	if ( m_eCameraType != NO_CAMERA/* || EstablishLink() == CE_NO_ERROR*/ )
 		return TRUE;
 	else
 		return FALSE;
