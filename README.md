@@ -369,10 +369,10 @@ acknowledgment to people contributing bugfixes or enhancements.
 Version
 -------
 
-Version: 0.1.1 of 2015/10/29.
+Version: 0.1.2 of 2015/12/22.
 
 The actual version of `ice_telescope` may be found on the following link:
-[`ice_telescope.zip`](https://baiels.redkaos.org/index.php/s/H4i9a87jyLQ4BMc).
+[`ice_telescope.zip`](https://baiels.redkaos.org/index.php/s/5uqq3uB47HYeQOv).
 
 License and Copyright
 ---------------------

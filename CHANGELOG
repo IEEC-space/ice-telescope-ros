@@ -2,6 +2,15 @@
 Change history of the ice_telescope package
 ===========================================
 
+0.1.2    22 Dec 2015    - Added QT GUI (work in progress)
+                        - Changed connection method (now connect at 
+                          beginning and stay connected)
+                        - Added method to check CCD capture progress
+                        - Added connection check and try reconnection 
+                          before device action
+                        - Added method to reconnect devices
+                        - Updated README and docs
+
 0.1.1    29 Oct 2015    - Added README and docs folder
                         - Code refactoring
                         - Added full server (for all devices) 
