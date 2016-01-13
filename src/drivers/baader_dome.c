@@ -26,8 +26,11 @@
 #include <unistd.h>  /* UNIX standard function definitions */
 #include <fcntl.h>   /* File control definitions */
 #include <errno.h>   /* Error number definitions */
-#include <termios.h> /* POSIX terminal control definitions */
 #include <sys/time.h>
+
+#ifndef _WIN32
+#include <termios.h>
+#endif
 
 #include "ice_telescope/tty_com.h"
 #include "ice_telescope/baader_dome.h"

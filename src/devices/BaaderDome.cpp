@@ -66,7 +66,7 @@ bool BaaderDome::baader_action(ice_telescope::baader::Request &req, ice_telescop
   if(!dome_ack(portFD))
   {
     ROS_ERROR("Dome disconnected");
-    if(baader_reconnect(res))
+    if(!baader_reconnect(res))
     {
       return true;
     }
