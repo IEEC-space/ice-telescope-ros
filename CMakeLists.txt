@@ -60,6 +60,7 @@ add_service_files(
   baader.srv
   sbig.srv
   meade.srv
+  vaisala.srv
 )
 
 ## Generate added messages and services with any dependencies listed here
@@ -105,6 +106,8 @@ add_executable(ice_tel_server
   src/devices/SbigCcd.cpp
   src/drivers/lx200gps.c
   src/devices/MeadeTelescope.cpp
+  src/drivers/vaisala_ws.c
+  src/devices/VaisalaWS.cpp
 )
 add_dependencies(ice_tel_server ice_telescope_gencpp)
 target_link_libraries(ice_tel_server 
@@ -113,6 +116,14 @@ target_link_libraries(ice_tel_server
   ${CFITSIO_CFITSIO_LIBRARY} 
   ${SBIGUDRV_LIBRARY}
 )
+
+####################
+## Vaisala Client ##
+####################
+
+add_executable(vaisala_client src/clients/vaisala_client.cpp)
+add_dependencies(vaisala_client ice_telescope_gencpp)
+target_link_libraries(vaisala_client ${catkin_LIBRARIES})
 
 ################
 ## Client App ##

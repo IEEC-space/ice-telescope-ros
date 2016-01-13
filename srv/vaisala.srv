@@ -1,0 +1,4 @@
+string vaisala_action
+---
+string vaisala_response
+bool vaisala_error

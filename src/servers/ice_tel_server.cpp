@@ -20,6 +20,7 @@
 #include "ice_telescope/BaaderDome.h"
 #include "ice_telescope/MeadeTelescope.h"
 #include "ice_telescope/SbigCcd.h"
+#include "ice_telescope/VaisalaWS.h"
 
 int main(int argc, char **argv)
 {
@@ -38,6 +39,10 @@ int main(int argc, char **argv)
   // CCD service
   SbigCcd sbigCcd;
   ros::ServiceServer sbigService = n.advertiseService("sbig_action", &SbigCcd::sbig_action, &sbigCcd);
+
+  // Weather station service
+  VaisalaWS vaisalaWS;
+  ros::ServiceServer vaisalaService = n.advertiseService("vaisala_action", &VaisalaWS::vaisala_action, &vaisalaWS);
 
   spinner.start();
   ros::waitForShutdown();
