@@ -31,7 +31,7 @@
 #include "ice_telescope/tty_com.h"
 #include "ice_telescope/vaisala_ws.h"
 
-#define DEVICE_NAME "/dev/tty.usbserial"
+#define DEVICE_NAME "/dev/ttyUSB2"
 #define WS_BUF 32
 #define WS_TIMEOUT 3
 
@@ -75,7 +75,7 @@ bool ws_ack(int portFD)
 
   tcflush(portFD, TCIOFLUSH);
 
-  if((rc = tty_write(portFD, "vers", 4, &nbytes_written)) != TTY_OK)
+  if((rc = tty_write(portFD, "vers\r", 5, &nbytes_written)) != TTY_OK)
   {
     tty_error_msg(rc, errstr, MAXRBUF);
     if(tty_debug) fprintf(stderr, "vers Ack error: %s\n", errstr);
@@ -84,11 +84,11 @@ bool ws_ack(int portFD)
 
   if(tty_debug) fprintf(stderr, "CMD (vers)\n");
 
-  if((rc = tty_read(portFD, resp, 13, WS_TIMEOUT, &nbytes_read)) != TTY_OK)
+  if((rc = tty_read(portFD, resp, 15, WS_TIMEOUT, &nbytes_read)) != TTY_OK)
   {
     tty_error_msg(rc, errstr, MAXRBUF);
     if(tty_debug) fprintf(stderr, "Ack error: %s\n", errstr);
-      return false;
+    return false;
   }
 
   resp[nbytes_read] = '\0';
@@ -102,13 +102,35 @@ bool ws_ack(int portFD)
     return false;
 }
 
-bool ws_getinfo(int portFD, char *info)
+int ws_getinfo(int portFD, char *info)
 {
   int error_type;
-  int nbytes_read=0;
+  int nbytes_write=0, nbytes_read=0;
+  char resp[64];
+  float hpa, temp, rh;
 
+  tcflush(portFD, TCIOFLUSH);
+
+  if(tty_debug)
+    fprintf(stderr, "%s Command [send]\n", __FUNCTION__);
+
+  if((error_type = tty_write_string(portFD, "send\r", &nbytes_write)) != TTY_OK)
+    return error_type;
+
+  error_type = tty_read(portFD, resp, 31, WS_TIMEOUT, &nbytes_read);
+  tcflush(portFD, TCIFLUSH);
+
+  if (error_type != TTY_OK)
+    return error_type;
+
+  if(sscanf(resp, "%f %*s %f %*s %f %*s", &hpa, &temp, &rh) < 3)
+    return -1;
+  else
+    snprintf(info, sizeof(resp), "%.1f hPa %.2f 'C %.2f %%RH", hpa, temp, rh);
+
+  if(tty_debug)
+    fprintf(stderr, "%s Response <%s>\n", __FUNCTION__, info);
   
-  
-  return true;
+  return 0;
 }
 

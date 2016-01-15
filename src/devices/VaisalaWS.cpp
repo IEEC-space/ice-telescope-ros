@@ -62,7 +62,7 @@ bool VaisalaWS::vaisala_action(ice_telescope::vaisala::Request &req, ice_telesco
 {
   vaisala_input(req);
 
-  if(ws_ack(portFD))
+  if(!ws_ack(portFD))
   {
     ROS_ERROR("Weather station disconnected");
     if(!vaisala_reconnect(res))
@@ -106,10 +106,10 @@ void VaisalaWS::vaisala_action_getinfo(ice_telescope::vaisala::Response &res)
 {
   char info[64];
 
-  if(ws_getinfo(portFD, info))
+  if(ws_getinfo(portFD, info) == 0)
   {
     std::stringstream s;
-    s << "Weather: " << info;
+    s << "Weather info: " << info;
     vaisala_output(res, s.str(), false);
   }
   else
