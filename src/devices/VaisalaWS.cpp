@@ -75,6 +75,10 @@ bool VaisalaWS::vaisala_action(ice_telescope::vaisala::Request &req, ice_telesco
   {
     vaisala_action_getinfo(res);
   }
+  else if(req.vaisala_action == "reset")
+  {
+    vaisala_action_reset(res);
+  }
   else
   {
     vaisala_output(res, "Invalid weather station action", true);
@@ -106,7 +110,7 @@ void VaisalaWS::vaisala_action_getinfo(ice_telescope::vaisala::Response &res)
 {
   char info[64];
 
-  if(ws_getinfo(portFD, info) == 0)
+  if(ws_getinfo(portFD, info))
   {
     std::stringstream s;
     s << "Weather info: " << info;
@@ -115,6 +119,18 @@ void VaisalaWS::vaisala_action_getinfo(ice_telescope::vaisala::Response &res)
   else
   {
     vaisala_output(res, "Error getting info from weather station", true);
+  }
+}
+
+void VaisalaWS::vaisala_action_reset(ice_telescope::vaisala::Response &res)
+{
+  if(ws_reset(portFD))
+  {
+    vaisala_output(res, "Vaisala successfully restarted", false);
+  }
+  else
+  {
+    vaisala_output(res, "Error restarting Vaisala", true);
   }
 }
 

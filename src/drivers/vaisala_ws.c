@@ -102,7 +102,7 @@ bool ws_ack(int portFD)
     return false;
 }
 
-int ws_getinfo(int portFD, char *info)
+bool ws_getinfo(int portFD, char *info)
 {
   int error_type;
   int nbytes_write=0, nbytes_read=0;
@@ -115,22 +115,58 @@ int ws_getinfo(int portFD, char *info)
     fprintf(stderr, "%s Command [send]\n", __FUNCTION__);
 
   if((error_type = tty_write_string(portFD, "send\r", &nbytes_write)) != TTY_OK)
-    return error_type;
+    return false;
 
   error_type = tty_read(portFD, resp, 31, WS_TIMEOUT, &nbytes_read);
   tcflush(portFD, TCIFLUSH);
 
   if (error_type != TTY_OK)
-    return error_type;
+    return false;
 
   if(sscanf(resp, "%f %*s %f %*s %f %*s", &hpa, &temp, &rh) < 3)
-    return -1;
+    return false;
   else
     snprintf(info, sizeof(resp), "%.1f hPa %.2f 'C %.2f %%RH", hpa, temp, rh);
 
   if(tty_debug)
     fprintf(stderr, "%s Response <%s>\n", __FUNCTION__, info);
   
-  return 0;
+  return true;
+}
+
+bool ws_reset(int portFD)
+{
+  int nbytes_written=0, nbytes_read=0, rc=-1;
+  char errstr[MAXRBUF];
+  char resp[WS_BUF];
+  char status[WS_BUF];
+
+  tcflush(portFD, TCIOFLUSH);
+
+  if((rc = tty_write(portFD, "reset\r", 6, &nbytes_written)) != TTY_OK)
+  {
+    tty_error_msg(rc, errstr, MAXRBUF);
+    if(tty_debug) fprintf(stderr, "reset Ack error: %s\n", errstr);
+    return false;
+  }
+
+  if(tty_debug) fprintf(stderr, "CMD (reset)\n");
+
+  if((rc = tty_read(portFD, resp, 15, WS_TIMEOUT, &nbytes_read)) != TTY_OK)
+  {
+    tty_error_msg(rc, errstr, MAXRBUF);
+    if(tty_debug) fprintf(stderr, "Ack error: %s\n", errstr);
+    return false;
+  }
+
+  resp[nbytes_read] = '\0';
+
+  if(tty_debug) fprintf(stderr, "RES (%s)\n", resp);
+
+  rc = sscanf(resp, "%s", status);
+  if(rc > 0)
+    return true;
+  else
+    return false;
 }
 

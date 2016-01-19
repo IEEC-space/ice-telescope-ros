@@ -36,5 +36,6 @@ protected:
   void vaisala_input(ice_telescope::vaisala::Request &req);
   void vaisala_output(ice_telescope::vaisala::Response &res, string out_str, bool error);
   void vaisala_action_getinfo(ice_telescope::vaisala::Response &res);
+  void vaisala_action_reset(ice_telescope::vaisala::Response &res);
   
 };

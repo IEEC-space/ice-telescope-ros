@@ -22,6 +22,7 @@
 bool ws_connect(int *in_fd);
 bool ws_disconnect(int portFD);
 bool ws_ack(int portFD);
-int ws_getinfo(int portFD, char *info);
+bool ws_getinfo(int portFD, char *info);
+bool ws_reset(int portFD);
 
 #endif
