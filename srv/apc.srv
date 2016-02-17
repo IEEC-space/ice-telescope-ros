@@ -1,0 +1,5 @@
+string apc_action
+string apc_device
+---
+string apc_response
+bool apc_error
