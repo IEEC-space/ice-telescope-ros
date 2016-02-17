@@ -49,6 +49,19 @@ if (NOT SBIGUDRV_LIBRARY)
 	)
 endif (NOT SBIGUDRV_LIBRARY)
 
+## SNMP
+if (NOT NETSNMP_INCLUDES)
+  find_path (NETSNMP_INCLUDE net-snmp/net-snmp-includes.h net-snmp/net-snmp-config.h
+    PATHS /usr/include /usr/local/include
+  )
+endif (NOT NETSNMP_INCLUDES)
+
+if (NOT NETSNMP_LIBRARY)
+  find_library (NETSNMP_LIBRARY netsnmp libnetsnmp
+    PATHS /usr/lib /usr/local/lib
+  )
+endif (NOT NETSNMP_LIBRARY)
+
 
 ################################################
 ## Declare ROS messages, services and actions ##
@@ -60,6 +73,7 @@ add_service_files(
   baader.srv
   sbig.srv
   meade.srv
+  apc.srv
   vaisala.srv
 )
 
@@ -89,6 +103,7 @@ include_directories(
   ${LIBUSB1_INCLUDE_DIRS}
   ${CFITSIO_INCLUDES}
   ${QT_INCLUDE_DIRS}
+  ${NETSNMP_INCLUDES}
 )
 
 
@@ -106,6 +121,8 @@ add_executable(ice_tel_server
   src/devices/SbigCcd.cpp
   src/drivers/lx200gps.c
   src/devices/MeadeTelescope.cpp
+  src/drivers/snmp_com.c
+  src/devices/ApcPdu.cpp
   src/drivers/vaisala_ws.c
   src/devices/VaisalaWS.cpp
 )
@@ -115,7 +132,16 @@ target_link_libraries(ice_tel_server
   ${LIBUSB_1_LIBRARIES} 
   ${CFITSIO_CFITSIO_LIBRARY} 
   ${SBIGUDRV_LIBRARY}
+  ${NETSNMP_LIBRARY}
 )
+
+################
+## APC Client ##
+################
+
+add_executable(apc_client src/clients/apc_client.cpp)
+add_dependencies(apc_client ice_telescope_gencpp)
+target_link_libraries(apc_client ${catkin_LIBRARIES})
 
 ####################
 ## Vaisala Client ##

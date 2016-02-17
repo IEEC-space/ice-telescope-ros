@@ -17,6 +17,7 @@
 */
 
 #include "ros/ros.h"
+#include "ice_telescope/ApcPdu.h"
 #include "ice_telescope/BaaderDome.h"
 #include "ice_telescope/MeadeTelescope.h"
 #include "ice_telescope/SbigCcd.h"
@@ -26,7 +27,11 @@ int main(int argc, char **argv)
 {
   ros::init(argc, argv, "ice_tel_server");
   ros::NodeHandle n;
-  ros::AsyncSpinner spinner(8); // Use 8 threads. 0 -> use the number of cores.
+  ros::AsyncSpinner spinner(12); // Use 8 threads. 0 -> use the number of cores.
+
+  // Power distribution service
+  ApcPdu apcPdu;
+  ros::ServiceServer apcService = n.advertiseService("apc_action", &ApcPdu::apc_action, &apcPdu);
 
   // Dome service
   BaaderDome baaderDome;

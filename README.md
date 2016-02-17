@@ -358,6 +358,7 @@ Requirements
 
   - libusb-1.0
   - cfitsio
+  - libsnmp-dev
   - libsbigudrv. This library can be downloaded from [here](http://archive.sbig.com/sbwhtmls/devswframe.htm).
 
 Changes
