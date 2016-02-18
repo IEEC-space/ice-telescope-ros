@@ -326,5 +326,8 @@ void SbigCcd::sbig_action_capture(ice_telescope::sbig::Request &req, ice_telesco
     ROS_INFO("File saved as: %s", filePathName.c_str());
   }
 
-  sbig_output(res, NULL, "File(s) saved to disk", false, CE_NO_ERROR);
+  if(err == CE_NO_ERROR && ferr == SBFE_NO_ERROR)
+  {
+    sbig_output(res, NULL, "File(s) saved to disk", false, CE_NO_ERROR);
+  }
 }

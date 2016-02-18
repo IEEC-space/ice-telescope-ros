@@ -774,8 +774,8 @@ SBIG_FILE_ERROR CSBIGImg::ReadUncompressedImage(FILE *fh)
 */
 MY_LOGICAL CSBIGImg::AllocateImageBuffer(int height, int width)
 {
-	if (m_pImage)
-		delete m_pImage;
+	// if (m_pImage)
+	// 	delete m_pImage;
 	m_nHeight = m_nWidth = 0;
 	if (height > 0 && width > 0) {
 		m_pImage = new unsigned short[(long)height * width];
