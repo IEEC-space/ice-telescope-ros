@@ -2,6 +2,13 @@
 Change history of the ice_telescope package
 ===========================================
 
+0.1.3    17 Feb 2016    - Added Vaisala weather station
+                        - Added APC Switched PDU
+                        - Removed old and unnecessary files. General cleanup.
+                            -> Removed devices servers (now only one server)
+                        - Updated CMakeLists after cleanup
+                        - Updated README and docs
+
 0.1.2    22 Dec 2015    - Added QT GUI (work in progress)
                         - Changed connection method (now connect at 
                           beginning and stay connected)

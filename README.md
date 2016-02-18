@@ -3,18 +3,19 @@ ROS-TELESCOPE: ICE Telescope - A ROS package
 
 `ice_telescope` is a ROS package to operate and remote control the
 telescope system at the ICE building in the UAB Campus. The full system
-is composed of a Meade LX200GPS telescope, an SBIG ST-7 CCD camera and a
-Baader Planetarium dome.
+is composed of a Meade LX200GPS telescope, a SBIG ST-7 CCD camera, a
+Baader Planetarium dome, an APC Switched PDU and a Vaisala weather station.
 
 ### Table of Contents
 
 -   [Synopsis](#synopsis)
 -   [Description](#description)
--   [Servers](#servers)
+-   [Server](#server)
 -   [Telescope client](#telescope-client)
 -   [CCD client](#ccd-client)
 -   [Dome client](#dome-client)
--   [Files](#files)
+-   [PDU client](#pdu-client)
+-   [Weather Station client](#ws-client)
 -   [Example](#example)
 -   [See Also](#see-also)
 -   [Requirements](#requirements)
@@ -32,7 +33,7 @@ Synopsis
 
 **Server**
 
-    rosrun ice_telescope ice_telescope_node
+    rosrun ice_telescope ice_tel_server
 
 **Client**
 
@@ -44,22 +45,23 @@ Description
 `ice_telescope` is composed of several nodes --`ice_telescope_node`--
 that allow the control of the telescope system. In addition to the 
 server to control all devices `ice_tel_server`, each of the system
-components (telescope, dome, ccd) has a pair of client--server nodes
-following the naming convention `brand_server` and `brand_client`:
+components (telescope, dome, ccd, pdu, weather station) has a client node
+following the naming convention `brand_client`:
 
 **Full-Server**:   `ice_tel_server`.
 
-**Telescope**:   `meade_server` and `meade_client`.
+**Telescope**:   `meade_client`.
 
-**CCD**:   `sbig_server` and `sbig_client`.
+**CCD**:   `sbig_client`.
 
-**Dome**:   `baader_server` and `baader_client`.
+**Dome**:   `baader_client`.
 
-**Note:** The `brand_server` servers are there for your convenience 
-but only the `ice_tel_server` is necessary to control them all.
+**PDU**:    `apc_client`.
+
+**WS**:     `vaisala_client`.
 
 The server node runs continuously waiting for petitions from the client
-node. When a client node's petition is received by the server node, the
+nodes. When a client node's petition is received by the server node, the
 server processes the petition, sends a response back to the client and
 returns to the waiting mode. The client waits for the server response
 and finishes the execution.
@@ -74,27 +76,15 @@ The **action** parameter issues the desired order to the server.
 **Note:** `roscore` must be running at all times for node communication
 and interoperation.
 
-Servers
--------
+Server
+------
 
-The servers for all the system elements are executed without additional
-parameters and they must be running to listen to the clients commands.
+The server for all the system elements is executed without additional
+parameters and it must be running to listen to the clients commands.
 
 **Full-Server**
 
     rosrun ice_telescope ice_tel_server
-
-**Telescope**
-
-    rosrun ice_telescope meade_server
-
-**CCD**
-
-    rosrun ice_telescope sbig_server
-
-**Dome**
-
-    rosrun ice_telescope baader_server
 
 Telescope client
 ----------------
@@ -103,7 +93,6 @@ The telescope client issues the user's desired actions to perform with
 the Meade LX200GPS Telescope.
 
     rosrun ice_telescope meade_client action [params]
-    rosrun ice_telescope meade_client.py action [params]
 
 **Note:** To run more than one meade_client node at the same time it is necessary to specify a name for the node in the above commands as follows [__name:=DesiredName]
 
@@ -195,7 +184,6 @@ The CCD client issues the user's desired actions to perform with the
 SBIG ST-7 CCD.
 
     rosrun ice_telescope sbig_client action [params]
-    rosrun ice_telescope sbig_client.py action [params]
 
 **Note:** To run more than one sbig_client node at the same time it is necessary to specify a name for the node in the above commands as follows [__name:=DesiredName]
 
@@ -265,7 +253,6 @@ The dome client issues the user's desired actions to perform with the
 Baader Planetarium Dome.
 
     rosrun ice_telescope baader_client action
-    rosrun ice_telescope baader_client.py action
 
 **Note:** To run more than one baader_client node at the same time it is necessary to specify a name for the node in the above commands as follows [__name:=DesiredName]
 
@@ -299,28 +286,69 @@ Re-establish dome connection.
 
     rosrun ice_telescope baader_client reconnect
 
-Files
------
 
-`ice_tel_server` C++ implementation of the server to control all devices.
+PDU client
+----------
 
-`meade_server` C++ implementation of the telescope server.
+The PDU client issues the user's desired actions to perform with the APC Switched PDU.
 
-`meade_client` C++ implementation of the telescope client.
+    rosrun ice_telescope apc_client action device
 
-`meade_client.py` Python implementation for the telescope client.
+**Note:** To run more than one apc_client node at the same time it is necessary to specify a name for the node in the above commands as follows [__name:=DesiredName]
 
-`sbig_server` C++ implementation of the CCD server.
+### Options
 
-`sbig_client` C++ implementation of the CCD client.
+The **action** parameter is the command to be sent to the server and the **device** parameter specifies on which system element the action has to be performed. The **device** parameter can be one of the following:
 
-`sbig_client.py` Python implementation for the CCD client.
+**telescope**
 
-`baader_server` C++ implementation of the dome server.
+The specified **action** will be performed on the telescope.
 
-`baader_client` C++ implementation of the dome client.
+    rosrun ice_telescope apc_client [action] telescope
 
-`baader_client.py` Python implementation for the dome client.
+**ccd**
+
+The specified **action** will be performed on the CCD.
+
+    rosrun ice_telescope apc_client [action] ccd
+
+**weather_station**
+
+The specified **action** will be performed on the weather station.
+
+    rosrun ice_telescope apc_client [action] weather_station
+
+
+The **action** can be one of the following:
+
+**power_on**
+
+Power on the specified device by switching on the corresponding outlet of the PDU.
+
+    rosrun ice_telescope apc_client power_on [device]
+
+**power_off**
+
+Power off the specified device by switching off the corresponding outlet of the PDU.
+
+    rosrun ice_telescope apc_client power_off [device]
+
+**power_status**
+
+Check the corresponding PDU's outlet status.
+
+    rosrun ice_telescope apc_client power_status [device]
+
+
+Weather Station client
+----------------------
+
+The weather station client issues the user's desired actions to perform with the Vaisala weather station. The only action for the weather station is **getinfo**.
+
+    rosrun ice_telescope vaisala_client getinfo
+
+**Note:** To run more than one vaisala_client node at the same time it is necessary to specify a name for the node in the above commands as follows [__name:=DesiredName]
+
 
 Example
 -------
@@ -348,7 +376,7 @@ ROS, `rosrun`, `roscd`, `rosls`, `catkin_make`.
 Requirements
 ------------
 
-**ROS Environment:**   `ice_telescope` requires ROS version &gt;= 1.11.13 (&gt;=
+**ROS Environment:**   `ice_telescope` requires ROS version &gt;= 1.11.16 (&gt;=
     Indigo distribution).
 
 **ROS Workspace:**   If you want to compile or install the distributed system, you need a
@@ -370,10 +398,7 @@ acknowledgment to people contributing bugfixes or enhancements.
 Version
 -------
 
-Version: 0.1.2 of 2015/12/22.
-
-The actual version of `ice_telescope` may be found on the following link:
-[`ice_telescope.zip`](https://baiels.redkaos.org/index.php/s/5uqq3uB47HYeQOv).
+Version: 0.1.3 of 2016/02/17.
 
 License and Copyright
 ---------------------

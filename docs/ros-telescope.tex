@@ -34,18 +34,18 @@
 \usepackage[nofancy]{rcsinfo}
 \setDate{\rcsInfoLongDate}
 }{
-\setDate{2015/09/22}    %%%% must be manually set, if rcsinfo is not present
+\setDate{2016/02/17}    %%%% must be manually set, if rcsinfo is not present
 \message{package rcsinfo not present, discard it}
 }
 
 \setVersionWord{Version:}  %%% that's the default, no need to set it.
-\setVersion{0.1.2}
+\setVersion{0.1.3}
 
 \begin{document}
 
 \begin{Name}{1}{ros-telescope}{Biel Artigues Aguilo}{ICE Telescope}{ICE Telescope\\--\\ A ROS package}
 
-  \Prog{ice\_telescope} is a ROS package to operate and remote control the telescope system at the ICE building in the UAB Campus. The full system is composed of a Meade LX200GPS telescope, an SBIG ST-7 CCD camera and a Baader Planetarium dome. 
+  \Prog{ice\_telescope} is a ROS package to operate and remote control the telescope system at the ICE building in the UAB Campus. The full system is composed of a Meade LX200GPS telescope, a SBIG ST-7 CCD camera, a Baader Planetarium dome, an APC Switched PDU and a Vaisala weather station.. 
   \end{Name}
 
 \section{Synopsis}
@@ -58,7 +58,7 @@
 \noindent
 \textbf{Server}
 
-\Prog{rosrun} \Prog{ice\_telescope} \Prog{ice\_telescope\_node}
+\Prog{rosrun} \Prog{ice\_telescope} \Prog{ice\_tel\_server}
 
 \noindent
 \textbf{Client}
@@ -67,18 +67,17 @@
 
 \section{Description}
 %%%%%%%%%%%%%%%%%%%%%
-\Prog{ice\_telescope} is composed of several nodes --\Prog{ice\_telescope\_node}-- that allow the control of the telescope system. In addition to the server to control all devices \Prog{ice\_tel\_server}, each of the system components (telescope, dome, ccd) has a pair of client--server nodes following the naming convention \Prog{brand\_server} and \Prog{brand\_client}: 
+\Prog{ice\_telescope} is composed of several nodes --\Prog{ice\_telescope\_node}-- that allow the control of the telescope system. In addition to the server to control all devices \Prog{ice\_tel\_server}, each of the system components (telescope, dome, ccd, pdu, weather station) has a client node following the naming convention \Prog{brand\_client}: 
 \begin{Description}[\Opt{Full-Server}]\setlength{\itemsep}{0cm}
 \item[\Opt{Full-Server}] \Prog{ice\_tel\_server}.
-\item[\Opt{Telescope}] \Prog{meade\_server} and \Prog{meade\_client}.
-\item[\Opt{CCD}] \Prog{sbig\_server} and \Prog{sbig\_client}.
-\item[\Opt{Dome}] \Prog{baader\_server} and \Prog{baader\_client}.
+\item[\Opt{Telescope}] \Prog{meade\_client}.
+\item[\Opt{CCD}] \Prog{sbig\_client}.
+\item[\Opt{Dome}] \Prog{baader\_client}.
+\item[\Opt{PDU}] \Prog{apc\_client}.
+\item[\Opt{WS}]	\Prog{vaisala\_client}.
 \end{Description}
 
-\noindent
-\textbf{Note:} The \Prog{brand\_server} servers are there for your convenience but only the \Prog{ice\_tel\_server} is necessary to control them all. \\
-
-The server node runs continuously waiting for petitions from the client node. When a client node's petition is received by the server node, the server processes the petition, sends a response back to the client and returns to the waiting mode. The client waits for the server response and finishes the execution. \\
+The server node runs continuously waiting for petitions from the client nodes. When a client node's petition is received by the server node, the server processes the petition, sends a response back to the client and returns to the waiting mode. The client waits for the server response and finishes the execution. \\
 
 \noindent
 \textbf{Client node}
@@ -94,27 +93,12 @@ The \Opt{action} parameter issues the desired order to the server.
 \section{Servers}
 %%%%%%%%%%%%%%%%%
 
-The servers for all the system elements are executed without additional parameters and they must be running to listen to the clients commands. \\
+The server for all the system elements is executed without additional parameters and it must be running to listen to the clients commands. \\
 
 \noindent
 \textbf{Full-Server}
 
 \Prog{rosrun} \Prog{ice\_telescope} \Prog{ice\_tel\_server}
-
-\noindent
-\textbf{Telescope}
-
-\Prog{rosrun} \Prog{ice\_telescope} \Prog{meade\_server}
-
-\noindent
-\textbf{CCD}
-
-\Prog{rosrun} \Prog{ice\_telescope} \Prog{sbig\_server}
-
-\noindent
-\textbf{Dome}
-
-\Prog{rosrun} \Prog{ice\_telescope} \Prog{baader\_server}
 
 
 \section{Telescope client}
@@ -122,9 +106,7 @@ The servers for all the system elements are executed without additional paramete
 
 The telescope client issues the user's desired actions to perform with the Meade LX200GPS Telescope. \\
 
-\Prog{rosrun} \Prog{ice\_telescope} \Prog{meade\_client} \Arg{action} \oOpt{params} 
-
-\Prog{rosrun} \Prog{ice\_telescope} \Prog{meade\_client.py} \Arg{action} \oOpt{params} \\
+\Prog{rosrun} \Prog{ice\_telescope} \Prog{meade\_client} \Arg{action} \oOpt{params} \\
 
 \textbf{Note:} To run more than one \Prog{meade\_client} node at the same time it is necessary to specify a name for the node in the above commands as follows \oOpt{\_\_name:=DesiredName}
 
@@ -203,9 +185,7 @@ The \Arg{action} parameter is the command to be sent to the server. The \Arg{act
 
 The CCD client issues the user's desired actions to perform with the SBIG ST-7 CCD. \\
 
-\Prog{rosrun} \Prog{ice\_telescope} \Prog{sbig\_client} \Arg{action} \oOpt{params} 
-
-\Prog{rosrun} \Prog{ice\_telescope} \Prog{sbig\_client.py} \Arg{action} \oOpt{params} \\
+\Prog{rosrun} \Prog{ice\_telescope} \Prog{sbig\_client} \Arg{action} \oOpt{params} \\
 
 \textbf{Note:} To run more than one \Prog{sbig\_client} node at the same time it is necessary to specify a name for the node in the above commands as follows \oOpt{\_\_name:=DesiredName}
 
@@ -267,9 +247,7 @@ The \Arg{action} parameter is the command to be sent to the server. The \Arg{act
 
 The dome client issues the user's desired actions to perform with the Baader Planetarium Dome. \\
 
-\Prog{rosrun} \Prog{ice\_telescope} \Prog{baader\_client} \Arg{action}
-
-\Prog{rosrun} \Prog{ice\_telescope} \Prog{baader\_client.py} \Arg{action} \\
+\Prog{rosrun} \Prog{ice\_telescope} \Prog{baader\_client} \Arg{action}\\
 
 \textbf{Note:} To run more than one \Prog{baader\_client} node at the same time it is necessary to specify a name for the node in the above commands as follows \oOpt{\_\_name:=DesiredName}
 
@@ -298,22 +276,57 @@ The \Arg{action} parameter is the command to be sent to the server. The \Arg{act
 	
 \end{Description}
 
+\section{PDU client}
 
-\section{Files}
-%%%%%%%%%%%%%%%%%
+The PDU client issues the user's desired actions to perform with the APC Switched PDU. \\
 
-\begin{Description}[\File{baader\_client.py}]\setlength{\itemsep}{0cm}
-\item[\File{ice\_tel\_server}] C++ implementation of the server to control all devices.
-\item[\File{meade\_server}] C++ implementation of the telescope server.
-\item[\File{meade\_client}] C++ implementation of the telescope client.
-\item[\File{meade\_client.py}] Python implementation for the telescope client.
-\item[\File{sbig\_server}] C++ implementation of the CCD server.
-\item[\File{sbig\_client}] C++ implementation of the CCD client.
-\item[\File{sbig\_client.py}] Python implementation for the CCD client.
-\item[\File{baader\_server}] C++ implementation of the dome server.
-\item[\File{baader\_client}] C++ implementation of the dome client.
-\item[\File{baader\_client.py}] Python implementation for the dome client.
+\Prog{rosrun} \Prog{ice\_telescope} \Prog{apc\_client} \Arg{action} \Arg{device}\\
+
+\textbf{Note:} To run more than one \Prog{apc\_client} node at the same time it is necessary to specify a name for the node in the above commands as follows \oOpt{\_\_name:=DesiredName}
+
+\subsection{Options}
+
+The \Arg{action} parameter is the command to be sent to the server and the \Arg{device} parameter specifies on which system element the action has to be performed. The \Arg{device} parameter can be one of the following:
+
+\begin{Description}[\Arg{weather\_station}]\setlength{\itemsep}{0cm}
+\item[\Arg{telescope}] The specified \Arg{action} will be performed on the telescope.
+
+	\Prog{rosrun} \Prog{ice\_telescope} \Prog{apc\_client} \Arg{action} \Arg{telescope}
+
+\item[\Arg{ccd}] The specified \Arg{action} will be performed on the CCD.
+
+	\Prog{rosrun} \Prog{ice\_telescope} \Prog{apc\_client} \Arg{action} \Arg{ccd}
+
+\item[\Arg{weather\_station}] The specified \Arg{action} will be performed on the weather station.
+
+	\Prog{rosrun} \Prog{ice\_telescope} \Prog{apc\_client} \Arg{action} \Arg{weather\_station}
+
 \end{Description}
+
+The \Arg{action} can be one of the following:
+
+\begin{Description}[\Arg{power\_status}]\setlength{\itemsep}{0cm}
+\item[\Arg{power\_on}] Power on the specified device by switching on the corresponding outlet of the PDU.
+
+	\Prog{rosrun} \Prog{ice\_telescope} \Prog{apc\_client} \Arg{power\_on} \Arg{device}
+
+\item[\Arg{power\_off}] Power off the specified device by switching off the corresponding outlet of the PDU.
+
+	\Prog{rosrun} \Prog{ice\_telescope} \Prog{apc\_client} \Arg{power\_off} \Arg{device}
+
+\item[\Arg{power\_status}] Check the corresponding PDU's outlet status.
+
+	\Prog{rosrun} \Prog{ice\_telescope} \Prog{apc\_client} \Arg{power\_status} \Arg{device}
+
+\end{Description}
+
+\section{Weather Station client}
+
+The weather station client issues the user's desired actions to perform with the Vaisala weather station. The only action for the weather station is \Arg{getinfo}. \\
+
+\Prog{rosrun} \Prog{ice\_telescope} \Prog{vaisala\_client} \Arg{getinfo} \\
+
+\textbf{Note:} To run more than one \Prog{vaisala\_client} node at the same time it is necessary to specify a name for the node in the above commands as follows \oOpt{\_\_name:=DesiredName}
 
 
 \section{Example}
@@ -344,12 +357,13 @@ ROS, \Prog{rosrun}, \Prog{roscd}, \Prog{rosls}, \Prog{catkin\_make}.
 %%%%%%%%%%%%%%%%%%%%%%
 
 \begin{description}\setlength{\itemsep}{0cm}
-\item[ROS Environment] \Prog{ice\_telescope} requires ROS version $>=$ 1.11.13 ($>=$ Indigo distribution).
+\item[ROS Environment] \Prog{ice\_telescope} requires ROS version $>=$ 1.11.16 ($>=$ Indigo distribution).
 \item[ROS Workspace] If you want to compile or install the distributed system, you need a \Prog{catkin} workspace.
 \item[Libraries]: 
 	\begin{itemize}
 		\item \Opt{libusb-1.0}.
 		\item \Opt{cfitsio}.
+		\item \Opt{libsnmp-dev}.
 		\item \Opt{libsbigudrv}. This library can be downloaded from \\ \URL{http://archive.sbig.com/sbwhtmls/devswframe.htm}.
 	\end{itemize}
 \end{description}
@@ -370,10 +384,6 @@ Version: \Version\ of \Date.
 \item[Copyright] \copyright\ 2015, Biel Artigues Aguilo,
      ICE Building, Campus UAB, Bellaterra, Catalunya\\
      \Email{artigues@ice.cat}
-
-
-     The actual version of  \Prog{ice\_telescope} may be found on the following link\\
-     \URL{https://baiels.redkaos.org/index.php/s/5uqq3uB47HYeQOv}.
 
 \item[License] This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

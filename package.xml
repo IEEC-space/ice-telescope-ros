@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>ice_telescope</name>
-  <version>0.1.2</version>
+  <version>0.1.3</version>
   <description>The ICE Telescope ROS package</description>
 
   <maintainer email="artigues@ice.cat">Biel Artigues Aguilo</maintainer>
