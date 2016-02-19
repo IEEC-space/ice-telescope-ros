@@ -24,7 +24,7 @@ extern "C"
   #include "ice_telescope/snmp_com.h"
 }
 
-const char* PDU_HOST = "10.50.2.108";
+const char* PDU_HOST = "10.50.1.213";
 const char* TELESCOPE_OID = ".1.3.6.1.4.1.318.1.1.12.3.3.1.1.4.2";
 const char* CCD_OID = ".1.3.6.1.4.1.318.1.1.12.3.3.1.1.4.3";
 const char* WS_OID = ".1.3.6.1.4.1.318.1.1.12.3.3.1.1.4.4";
