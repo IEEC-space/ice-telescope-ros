@@ -28,6 +28,7 @@ const char* PDU_HOST = "10.50.1.213";
 const char* TELESCOPE_OID = ".1.3.6.1.4.1.318.1.1.12.3.3.1.1.4.2";
 const char* CCD_OID = ".1.3.6.1.4.1.318.1.1.12.3.3.1.1.4.3";
 const char* WS_OID = ".1.3.6.1.4.1.318.1.1.12.3.3.1.1.4.4";
+const char* LIGHT_OID = ".1.3.6.1.4.1.318.1.1.12.3.3.1.1.4.5";
 
 
 ApcPdu::ApcPdu()
@@ -128,6 +129,10 @@ void ApcPdu::apc_action_power(ice_telescope::apc::Request &req, ice_telescope::a
   {
     oid = (char*)WS_OID;
   }
+  else if(req.apc_device == "light")
+  {
+    oid = (char*)LIGHT_OID;
+  }
   else
   {
     apc_output(res, "Invalid PDU device", true);
@@ -179,6 +184,10 @@ void ApcPdu::apc_action_status(ice_telescope::apc::Request &req, ice_telescope::
   else if(req.apc_device == "weather_station")
   {
     oid = (char*)WS_OID;
+  }
+  else if(req.apc_device == "light")
+  {
+    oid = (char*)LIGHT_OID;
   }
   else
   {

@@ -318,6 +318,12 @@ The specified **action** will be performed on the weather station.
 
     rosrun ice_telescope apc_client [action] weather_station
 
+**light**
+
+The specified **action** will be performed on the light inside the dome.
+
+    rosrun ice_telescope apc_client [action] light
+
 
 The **action** can be one of the following:
 
