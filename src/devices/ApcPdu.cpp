@@ -125,7 +125,7 @@ void ApcPdu::apc_action_power(ice_telescope::apc::Request &req, ice_telescope::a
   {
     oid = (char*)CCD_OID;
   }
-  else if(req.apc_device == "weather_station")
+  else if(req.apc_device == "vaisala")
   {
     oid = (char*)WS_OID;
   }
@@ -181,7 +181,7 @@ void ApcPdu::apc_action_status(ice_telescope::apc::Request &req, ice_telescope::
   {
     oid = (char*)CCD_OID;
   }
-  else if(req.apc_device == "weather_station")
+  else if(req.apc_device == "vaisala")
   {
     oid = (char*)WS_OID;
   }

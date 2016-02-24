@@ -23,6 +23,7 @@ bool snmpc_open(const char *host);
 bool snmpc_check_session();
 int snmpc_read(const char *oid2,char *buffer,int len);
 int snmpc_write(const char *oid2, char *buffer, int len, char type, const char *val);
+int snmpc_walk(const char *oid2,char *buffer,int len);
 void snmpc_close(void);
 
 #endif

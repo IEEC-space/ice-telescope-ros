@@ -27,7 +27,7 @@ int main(int argc, char **argv)
 {
   ros::init(argc, argv, "ice_tel_server");
   ros::NodeHandle n;
-  ros::AsyncSpinner spinner(12); // Use 8 threads. 0 -> use the number of cores.
+  ros::AsyncSpinner spinner(24); // Use 24 threads. 0 -> use the number of cores.
 
   // Power distribution service
   ApcPdu apcPdu;

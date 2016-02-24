@@ -26,7 +26,7 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "apc_client");
   if(argc != 3)
   {
-    ROS_INFO("Usage: apc_client action device. Action: power_on; power_off; power_status. Device: telescope; ccd; weather_station; light");
+    ROS_INFO("Usage: apc_client action device. Action: power_on; power_off; power_status. Device: telescope; ccd; vaisala; light");
     return 1;
   }
 
