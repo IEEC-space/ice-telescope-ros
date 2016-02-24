@@ -58,7 +58,7 @@
 \noindent
 \textbf{Server}
 
-\Prog{rosrun} \Prog{ice\_telescope} \Prog{ice\_tel\_server}
+\Prog{rosrun} \Prog{ice\_telescope} \Prog{ice\_telescope\_node}
 
 \noindent
 \textbf{Client}
@@ -67,15 +67,18 @@
 
 \section{Description}
 %%%%%%%%%%%%%%%%%%%%%
-\Prog{ice\_telescope} is composed of several nodes --\Prog{ice\_telescope\_node}-- that allow the control of the telescope system. In addition to the server to control all devices \Prog{ice\_tel\_server}, each of the system components (telescope, dome, ccd, pdu, weather station) has a client node following the naming convention \Prog{brand\_client}: 
+\Prog{ice\_telescope} is composed of several nodes --\Prog{ice\_telescope\_node}-- that allow the control of the telescope system. In addition to the server to control all devices \Prog{ice\_tel\_server}, each of the system components (telescope, dome, ccd, pdu, weather station) has a pair of client--server nodes following the naming convention \Prog{brand\_server} and \Prog{brand\_client}: 
 \begin{Description}[\Opt{Full-Server}]\setlength{\itemsep}{0cm}
 \item[\Opt{Full-Server}] \Prog{ice\_tel\_server}.
-\item[\Opt{Telescope}] \Prog{meade\_client}.
-\item[\Opt{CCD}] \Prog{sbig\_client}.
-\item[\Opt{Dome}] \Prog{baader\_client}.
-\item[\Opt{PDU}] \Prog{apc\_client}.
-\item[\Opt{WS}]	\Prog{vaisala\_client}.
+\item[\Opt{Telescope}] \Prog{meade\_server} and \Prog{meade\_client}.
+\item[\Opt{CCD}] \Prog{sbig\_server} and \Prog{sbig\_client}.
+\item[\Opt{Dome}] \Prog{baader\_server} and \Prog{baader\_client}.
+\item[\Opt{PDU}] \Prog{apc\_server} and \Prog{apc\_client}.
+\item[\Opt{WS}]	\Prog{vaisala\_server} and \Prog{vaisala\_client}.
 \end{Description}
+
+\noindent 
+\textbf{Note:} The \Prog{brand\_server} servers are there for your convenience but only the \Prog{ice\_tel\_server} is necessary to control them all. \\
 
 The server node runs continuously waiting for petitions from the client nodes. When a client node's petition is received by the server node, the server processes the petition, sends a response back to the client and returns to the waiting mode. The client waits for the server response and finishes the execution. \\
 
@@ -99,6 +102,31 @@ The server for all the system elements is executed without additional parameters
 \textbf{Full-Server}
 
 \Prog{rosrun} \Prog{ice\_telescope} \Prog{ice\_tel\_server}
+
+\noindent
+\textbf{Telescope}
+ 
+\Prog{rosrun} \Prog{ice\_telescope} \Prog{meade\_server}
+ 
+\noindent
+\textbf{CCD}
+
+\Prog{rosrun} \Prog{ice\_telescope} \Prog{sbig\_server}
+ 
+\noindent
+\textbf{Dome}
+	 
+\Prog{rosrun} \Prog{ice\_telescope} \Prog{baader\_server}
+
+\noindent
+\textbf{PDU}
+	 
+\Prog{rosrun} \Prog{ice\_telescope} \Prog{apc\_server}
+
+\noindent
+\textbf{WS}
+	 
+\Prog{rosrun} \Prog{ice\_telescope} \Prog{vaisala\_server}
 
 
 \section{Telescope client}
@@ -137,6 +165,14 @@ The \Arg{action} parameter is the command to be sent to the server. The \Arg{act
 	\begin{itemize}
 		\item \Opt{objectNum} The catalog number for the desired object.
 	\end{itemize}
+
+\item[\Arg{park}] Slew the telescope to the parked position. \textbf{Note:} after parking, a power cycle is required.
+
+	\Prog{rosrun} \Prog{ice\_telescope} \Prog{meade\_client} \Arg{park}
+
+\item[\Arg{status}] Check if the telescope is moving or IDLE.
+
+	\Prog{rosrun} \Prog{ice\_telescope} \Prog{meade\_client} \Arg{status}
 	
 \item[\Arg{gps}] Update the system's gps. \textbf{Note:} The dome must be open for the gps sync.
 
@@ -297,9 +333,9 @@ The \Arg{action} parameter is the command to be sent to the server and the \Arg{
 
 	\Prog{rosrun} \Prog{ice\_telescope} \Prog{apc\_client} \Arg{action} \Arg{ccd}
 
-\item[\Arg{weather\_station}] The specified \Arg{action} will be performed on the weather station.
+\item[\Arg{vaisala}] The specified \Arg{action} will be performed on the weather station.
 
-	\Prog{rosrun} \Prog{ice\_telescope} \Prog{apc\_client} \Arg{action} \Arg{weather\_station}
+	\Prog{rosrun} \Prog{ice\_telescope} \Prog{apc\_client} \Arg{action} \Arg{vaisala}
 
 \item[\Arg{light}] The specified \Arg{action} will be performed on the light inside the dome.
 

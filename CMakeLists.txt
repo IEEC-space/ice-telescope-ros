@@ -135,42 +135,114 @@ target_link_libraries(ice_tel_server
   ${NETSNMP_LIBRARY}
 )
 
-########################
-## Baader Dome Client ##
-########################
+#################
+## Baader Dome ##
+#################
+
+## Client
 
 add_executable(baader_client src/clients/baader_client.cpp)
 add_dependencies(baader_client ice_telescope_gencpp)
 target_link_libraries(baader_client ${catkin_LIBRARIES})
 
-#####################
-## SBIG CCD Client ##
-#####################
+## Server
+
+add_executable(baader_server 
+  src/servers/baader_server.cpp 
+  src/drivers/tty_com.c
+  src/drivers/baader_dome.c 
+  src/devices/BaaderDome.cpp
+)
+add_dependencies(baader_server ice_telescope_gencpp)
+target_link_libraries(baader_server ${catkin_LIBRARIES})
+
+##############
+## SBIG CCD ##
+##############
+
+## Client
 
 add_executable(sbig_client src/clients/sbig_client.cpp)
 add_dependencies(sbig_client ice_telescope_gencpp)
 target_link_libraries(sbig_client ${catkin_LIBRARIES})
 
-############################
-## Meade Telescope Client ##
-############################
+## Server
+
+add_executable(sbig_server 
+  src/servers/sbig_server.cpp 
+  src/drivers/csbigcam.cpp
+  src/drivers/csbigimg.cpp
+  src/devices/SbigCcd.cpp
+)
+add_dependencies(sbig_server ice_telescope_gencpp)
+target_link_libraries(sbig_server 
+  ${catkin_LIBRARIES} 
+  ${LIBUSB_1_LIBRARIES} 
+  ${CFITSIO_CFITSIO_LIBRARY} 
+  ${SBIGUDRV_LIBRARY}
+)
+
+#####################
+## Meade Telescope ##
+#####################
+
+## Client
 
 add_executable(meade_client src/clients/meade_client.cpp)
 add_dependencies(meade_client ice_telescope_gencpp)
 target_link_libraries(meade_client ${catkin_LIBRARIES})
 
-################
-## APC Client ##
-################
+## Server
+
+add_executable(meade_server 
+  src/servers/meade_server.cpp 
+  src/drivers/tty_com.c 
+  src/drivers/lx200gps.c
+  src/devices/MeadeTelescope.cpp
+)
+add_dependencies(meade_server ice_telescope_gencpp)
+target_link_libraries(meade_server ${catkin_LIBRARIES})
+
+#########
+## APC ##
+#########
+
+## Client
 
 add_executable(apc_client src/clients/apc_client.cpp)
 add_dependencies(apc_client ice_telescope_gencpp)
 target_link_libraries(apc_client ${catkin_LIBRARIES})
 
+## Server
+
+add_executable(apc_server
+  src/servers/apc_server.cpp
+  src/drivers/snmp_com.c
+  src/devices/ApcPdu.cpp
+)
+add_dependencies(apc_server ice_telescope_gencpp)
+target_link_libraries(apc_server 
+  ${catkin_LIBRARIES}
+  ${NETSNMP_LIBRARY}
+)
+
 ####################
 ## Vaisala Client ##
 ####################
 
+## Client
+
 add_executable(vaisala_client src/clients/vaisala_client.cpp)
 add_dependencies(vaisala_client ice_telescope_gencpp)
 target_link_libraries(vaisala_client ${catkin_LIBRARIES})
+
+## Server
+
+add_executable(vaisala_server
+  src/servers/vaisala_server.cpp
+  src/drivers/tty_com.c 
+  src/drivers/vaisala_ws.c
+  src/devices/VaisalaWS.cpp
+)
+add_dependencies(vaisala_server ice_telescope_gencpp)
+target_link_libraries(vaisala_server ${catkin_LIBRARIES})

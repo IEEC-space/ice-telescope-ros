@@ -10,7 +10,7 @@ Baader Planetarium dome, an APC Switched PDU and a Vaisala weather station.
 
 -   [Synopsis](#synopsis)
 -   [Description](#description)
--   [Server](#server)
+-   [Servers](#servers)
 -   [Telescope client](#telescope-client)
 -   [CCD client](#ccd-client)
 -   [Dome client](#dome-client)
@@ -33,7 +33,7 @@ Synopsis
 
 **Server**
 
-    rosrun ice_telescope ice_tel_server
+    rosrun ice_telescope ice_telescope_node
 
 **Client**
 
@@ -45,23 +45,24 @@ Description
 `ice_telescope` is composed of several nodes --`ice_telescope_node`--
 that allow the control of the telescope system. In addition to the 
 server to control all devices `ice_tel_server`, each of the system
-components (telescope, dome, ccd, pdu, weather station) has a client node
-following the naming convention `brand_client`:
+components (telescope, dome, ccd, pdu, weather station) has a pair of client--server nodes following the naming convention `brand_server` and `brand_client`:
 
 **Full-Server**:   `ice_tel_server`.
 
-**Telescope**:   `meade_client`.
+**Telescope**:   `meade_server` and `meade_client`.
 
-**CCD**:   `sbig_client`.
+**CCD**:   `sbig_server` and `sbig_client`.
 
-**Dome**:   `baader_client`.
+**Dome**:   `baader_server` and `baader_client`.
 
-**PDU**:    `apc_client`.
+**PDU**:    `apc_server` and `apc_client`.
 
-**WS**:     `vaisala_client`.
+**WS**:     `vaisala_server` and `vaisala_client`.
+
+**Note:** The `brand_server` servers are there for your convenience but only the `ice_tel_server` is necessary to control them all.
 
 The server node runs continuously waiting for petitions from the client
-nodes. When a client node's petition is received by the server node, the
+node. When a client node's petition is received by the server node, the
 server processes the petition, sends a response back to the client and
 returns to the waiting mode. The client waits for the server response
 and finishes the execution.
@@ -76,15 +77,35 @@ The **action** parameter issues the desired order to the server.
 **Note:** `roscore` must be running at all times for node communication
 and interoperation.
 
-Server
-------
+Servers
+-------
 
-The server for all the system elements is executed without additional
-parameters and it must be running to listen to the clients commands.
+The servers for all the system elements are executed without additional
+parameters and they must be running to listen to the clients commands.
 
 **Full-Server**
 
     rosrun ice_telescope ice_tel_server
+
+**Telescope**
+
+    rosrun ice_telescope meade_server
+  
+**CCD**
+  
+    rosrun ice_telescope sbig_server
+   
+**Dome**
+  
+    rosrun ice_telescope baader_server
+
+**PDU**
+
+    rosrun ice_telescope apc_server
+
+**WS**
+
+    rosrun ice_telescope vaisala_server
 
 Telescope client
 ----------------
@@ -119,6 +140,18 @@ Point the telescope to the selected catalog object.
     rosrun ice_telescope meade_client deepsky objectNum
 
         -   objectNum: The catalog number for the desired object.
+
+**park**
+
+Slew the telescope to the parked position. **Note:** after parking, a power cycle is required.
+
+    rosrun ice_telescope meade_client park
+
+**status**
+
+Check if the telescope is moving or IDLE.
+
+    rosrun ice_telescope meade_client status
 
 **gps** 
 
@@ -312,11 +345,11 @@ The specified **action** will be performed on the CCD.
 
     rosrun ice_telescope apc_client [action] ccd
 
-**weather_station**
+**vaisala**
 
 The specified **action** will be performed on the weather station.
 
-    rosrun ice_telescope apc_client [action] weather_station
+    rosrun ice_telescope apc_client [action] vaisala
 
 **light**
 
