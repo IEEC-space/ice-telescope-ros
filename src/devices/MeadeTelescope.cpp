@@ -75,6 +75,16 @@ bool MeadeTelescope::meade_action(ice_telescope::meade::Request &req, ice_telesc
     meade_input(req, "");
     meade_action_gps(res);
   }
+  else if(req.meade_action == "status")
+  {
+    meade_input(req, "");
+    meade_action_status(res);
+  }
+  else if(req.meade_action == "park")
+  {
+    meade_input(req, "");
+    meade_action_park(res);
+  }
   else if(req.meade_action == "getobjradec")
   {
     meade_input(req, "");
@@ -340,5 +350,35 @@ void MeadeTelescope::meade_action_catalog(ice_telescope::meade::Request &req, ic
   else
   {
     meade_output(res, "Target selection failed", true);
+  }
+}
+
+void MeadeTelescope::meade_action_park(ice_telescope::meade::Response &res)
+{
+  if(Park(portFD))
+  {
+    meade_output(res, "Parking telescope in progress", false);
+  }
+  else
+  {
+    meade_output(res, "Parking failed", true);
+  }
+}
+
+void MeadeTelescope::meade_action_status(ice_telescope::meade::Response &res)
+{
+  int ret_val = -1;
+
+  if((ret_val = isSlewComplete(portFD)) == 0)
+  {
+    meade_output(res, "Telescope is IDLE", false);
+  }
+  else if(ret_val == 1)
+  {
+    meade_output(res, "Telescope is moving", false);
+  }
+  else
+  {
+    meade_output(res, "Error getting telescope status", true);
   }
 }
