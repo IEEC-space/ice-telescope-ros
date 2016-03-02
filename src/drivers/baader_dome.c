@@ -101,6 +101,8 @@ bool dome_ack(int portFD)
 
   	if(tty_debug) fprintf(stderr, "CMD (d#getshut)\n");
 
+    usleep(100000);
+
   	if((rc = tty_read(portFD, resp, DOME_CMD, DOME_TIMEOUT, &nbytes_read)) != TTY_OK)
   	{
   		tty_error_msg(rc, errstr, MAXRBUF);
@@ -136,6 +138,8 @@ bool dome_shutter_status(int portFD)
   	}
 
   	if(tty_debug) fprintf(stderr, "CMD (d#getshut)\n");
+
+    usleep(100000);
 
   	if((rc = tty_read(portFD, resp, DOME_CMD, DOME_TIMEOUT, &nbytes_read)) != TTY_OK)
   	{
@@ -212,6 +216,8 @@ bool dome_control_shutter(int portFD, ShutterOperation operation)
   	}
 
   	if(tty_debug) fprintf(stderr, "CMD (%s)\n", cmd);
+
+    usleep(100000);
 
   	if((rc = tty_read(portFD, resp, DOME_CMD, DOME_TIMEOUT, &nbytes_read)) != TTY_OK)
   	{

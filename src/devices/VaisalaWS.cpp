@@ -60,9 +60,17 @@ bool VaisalaWS::vaisala_reconnect(ice_telescope::vaisala::Response &res)
 
 bool VaisalaWS::vaisala_action(ice_telescope::vaisala::Request &req, ice_telescope::vaisala::Response &res)
 {
+  int retry;
+
   vaisala_input(req);
 
-  if(!ws_ack(portFD))
+  retry = 0;
+  while(!ws_ack(portFD) && retry < 3) // Ñapa xunga per evitar errors del port serie
+  {
+    retry++;
+  }
+
+  if(retry == 3)
   {
     ROS_ERROR("Weather station disconnected");
     if(!vaisala_reconnect(res))
@@ -70,6 +78,20 @@ bool VaisalaWS::vaisala_action(ice_telescope::vaisala::Request &req, ice_telesco
       return true;
     }
   }
+
+  // if(!ws_ack(portFD))
+  // {
+  //   if(!ws_ack(portFD))
+  //     if(!ws_ack(portFD))
+  //     {
+  //       ROS_ERROR("Weather station disconnected");
+  //       if(!vaisala_reconnect(res))
+  //       {
+  //         return true;
+  //       }
+  //     }
+
+  // }
 
   if(req.vaisala_action == "getinfo")
   {
@@ -109,8 +131,15 @@ void VaisalaWS::vaisala_output(ice_telescope::vaisala::Response &res, string out
 void VaisalaWS::vaisala_action_getinfo(ice_telescope::vaisala::Response &res)
 {
   char info[64];
+  int retry;
 
-  if(ws_getinfo(portFD, info))
+  retry = 0;
+  while(!ws_getinfo(portFD, info) && retry < 3) // Ñapa xunga per evitar errors del port serie
+  {
+    retry++;
+  }
+
+  if(retry < 3)
   {
     std::stringstream s;
     s << "Weather info: " << info;
@@ -120,6 +149,35 @@ void VaisalaWS::vaisala_action_getinfo(ice_telescope::vaisala::Response &res)
   {
     vaisala_output(res, "Error getting info from weather station", true);
   }
+
+  // if(ws_getinfo(portFD, info))
+  // {
+  //   std::stringstream s;
+  //   s << "Weather info: " << info;
+  //   vaisala_output(res, s.str(), false);
+  // }
+  // else
+  // {
+  //   if(ws_getinfo(portFD, info))
+  //   {
+  //     std::stringstream s;
+  //     s << "Weather info: " << info;
+  //     vaisala_output(res, s.str(), false);
+  //   }
+  //   else
+  //   {
+  //     if(ws_getinfo(portFD, info))
+  //     {
+  //       std::stringstream s;
+  //       s << "Weather info: " << info;
+  //       vaisala_output(res, s.str(), false);
+  //     }
+  //     else
+  //     {
+  //       vaisala_output(res, "Error getting info from weather station", true);
+  //     }
+  //   }
+  // }
 }
 
 void VaisalaWS::vaisala_action_reset(ice_telescope::vaisala::Response &res)

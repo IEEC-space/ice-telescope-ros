@@ -122,7 +122,10 @@ bool SbigCcd::sbig_action(ice_telescope::sbig::Request &req, ice_telescope::sbig
 
   if(req.sbig_action == "gettemp")
   {
-    sbig_action_gettemp(res, pCam, err);
+    if(pCam->m_eGrabState == GS_IDLE)
+      sbig_action_gettemp(res, pCam, err);
+    else
+      sbig_output(res, NULL, "Cannot get temperature. CCD is busy", true, CE_NO_ERROR);
   }
   else if(req.sbig_action == "getcapstatus")
   {
@@ -130,11 +133,17 @@ bool SbigCcd::sbig_action(ice_telescope::sbig::Request &req, ice_telescope::sbig
   }
   else if(req.sbig_action == "settemp")
   {
-    sbig_action_settemp(req, res, pCam, err);
+    if(pCam->m_eGrabState == GS_IDLE)
+      sbig_action_settemp(req, res, pCam, err);
+    else
+      sbig_output(res, NULL, "Cannot set temperature. CCD is busy", true, CE_NO_ERROR);
   }
   else if(req.sbig_action == "capture")
   {
-    sbig_action_capture(req, res, pCam, pImg, err);
+    if(pCam->m_eGrabState == GS_IDLE)
+      sbig_action_capture(req, res, pCam, pImg, err);
+    else
+      sbig_output(res, NULL, "Cannot get capture. CCD is busy", true, CE_NO_ERROR);
   }
   else if(req.sbig_action == "reconnect")
   {
@@ -183,6 +192,7 @@ void SbigCcd::sbig_action_gettemp(ice_telescope::sbig::Response &res, CSBIGCam* 
   if((err = pCam->QueryTemperatureStatus(enabled, sbigTemp, setpointTemp, percentTE)) != CE_NO_ERROR)
   {
     sbig_output(res, pCam, "Get temperature error: ", true, err);
+    pCam->m_eCameraType = NO_CAMERA;
     return;
   }
 
@@ -215,6 +225,7 @@ void SbigCcd::sbig_action_settemp(ice_telescope::sbig::Request &req, ice_telesco
   if((err = pCam->SetTemperatureRegulation(req.temp_enable, req.temperature)) != CE_NO_ERROR)
   {
     sbig_output(res, pCam, "Set temperature error: ", true, err);
+    pCam->m_eCameraType = NO_CAMERA;
     return;
   }
 
@@ -278,6 +289,7 @@ void SbigCcd::sbig_action_capture(ice_telescope::sbig::Request &req, ice_telesco
       if((err = pCam->GrabImage(pImg, SBDF_LIGHT_ONLY)) != CE_NO_ERROR)
       {
         sbig_output(res, pCam, "CSBIGCam error: ", true, err);
+        pCam->m_eCameraType = NO_CAMERA;
         break;
       }
     }
@@ -287,6 +299,7 @@ void SbigCcd::sbig_action_capture(ice_telescope::sbig::Request &req, ice_telesco
       if((err = pCam->GrabImage(pImg, SBDF_DARK_ONLY)) != CE_NO_ERROR)
       {
         sbig_output(res, pCam, "CSBIGCam error: ", true, err);
+        pCam->m_eCameraType = NO_CAMERA;
         break;
       }
     }

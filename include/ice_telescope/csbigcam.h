@@ -62,7 +62,6 @@ private:
 	PAR_ERROR 				m_eLastError;
 	PAR_COMMAND 			m_eLastCommand;
 	short 						m_nDrvHandle;
-	CAMERA_TYPE 			m_eCameraType;
 	unsigned short 		m_nFirmwareVersion;
 	CCD_REQUEST 			m_eActiveCCD;
 	double 						m_dExposureTime;
@@ -71,8 +70,7 @@ private:
 	int 							m_nSubFrameLeft,
 										m_nSubFrameTop,
 										m_nSubFrameWidth,
-										m_nSubFrameHeight;
-	GRAB_STATE 				m_eGrabState;
+										m_nSubFrameHeight;	
 	double 						m_dGrabPercent;
 	CFW_MODEL_SELECT	m_eCFWModel;
 	CFW_ERROR 				m_eCFWError;
@@ -94,6 +92,9 @@ public:
 	~CSBIGCam();
 
 	void Init();
+
+	CAMERA_TYPE 			m_eCameraType;
+	GRAB_STATE 				m_eGrabState;
 
 	// Error Reporting Routines
 	PAR_ERROR 	GetError();

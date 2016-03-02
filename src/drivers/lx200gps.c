@@ -36,7 +36,7 @@
 #include <termios.h>
 #endif
 
-#define DEVICE_NAME "/dev/ttyUSB1"
+#define DEVICE_NAME "/dev/ttyUSB2"
 #define LX200_TIMEOUT	3		/* FD timeout in seconds */
 
 int controller_format;

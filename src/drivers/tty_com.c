@@ -514,7 +514,7 @@ int tty_connect(const char *device, int bit_rate, int word_size, int parity, int
 
   /* blocking read until 1 char arrives */
   tty_setting.c_cc[VMIN]  = 1;
-  tty_setting.c_cc[VTIME] = 0;
+  tty_setting.c_cc[VTIME] = 1;
 
   /* now clear input and output buffers and activate the new terminal settings */
   tcflush(t_fd, TCIOFLUSH);

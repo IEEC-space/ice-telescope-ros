@@ -31,7 +31,7 @@
 #include "ice_telescope/tty_com.h"
 #include "ice_telescope/vaisala_ws.h"
 
-#define DEVICE_NAME "/dev/ttyUSB2"
+#define DEVICE_NAME "/dev/ttyUSB3"
 #define WS_BUF 32
 #define WS_TIMEOUT 3
 
@@ -84,12 +84,18 @@ bool ws_ack(int portFD)
 
   if(tty_debug) fprintf(stderr, "CMD (vers)\n");
 
-  if((rc = tty_read(portFD, resp, 15, WS_TIMEOUT, &nbytes_read)) != TTY_OK)
+  usleep(100000);
+
+  if((rc = tty_read(portFD, resp, 16, WS_TIMEOUT, &nbytes_read)) != TTY_OK)
   {
     tty_error_msg(rc, errstr, MAXRBUF);
     if(tty_debug) fprintf(stderr, "Ack error: %s\n", errstr);
     return false;
   }
+  tcflush(portFD, TCIFLUSH);
+
+  if(rc > 0)
+    return true;
 
   resp[nbytes_read] = '\0';
 
@@ -104,20 +110,24 @@ bool ws_ack(int portFD)
 
 bool ws_getinfo(int portFD, char *info)
 {
-  int error_type;
+  int error_type, i;
   int nbytes_write=0, nbytes_read=0;
   char resp[64];
   float hpa, temp, rh;
 
+  for(i=0; i<64; i++) resp[i] = '\0';
   tcflush(portFD, TCIOFLUSH);
 
   if(tty_debug)
     fprintf(stderr, "%s Command [send]\n", __FUNCTION__);
 
-  if((error_type = tty_write_string(portFD, "send\r", &nbytes_write)) != TTY_OK)
+  if((error_type = tty_write(portFD, "send\r", 5, &nbytes_write)) != TTY_OK)
     return false;
 
+  usleep(100000);
+
   error_type = tty_read(portFD, resp, 31, WS_TIMEOUT, &nbytes_read);
+
   tcflush(portFD, TCIFLUSH);
 
   if (error_type != TTY_OK)
@@ -151,6 +161,8 @@ bool ws_reset(int portFD)
   }
 
   if(tty_debug) fprintf(stderr, "CMD (reset)\n");
+
+  usleep(100000);
 
   if((rc = tty_read(portFD, resp, 15, WS_TIMEOUT, &nbytes_read)) != TTY_OK)
   {
