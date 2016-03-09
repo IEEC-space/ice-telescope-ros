@@ -156,6 +156,8 @@ int testAP(void);*/
  int selectCatalogObject(int fd, int catalog, int NNNN);
 /* Select a sub catalog */
  int selectSubCatalog(int fd, int catalog, int subCatalog);
+ /* Remote initialization*/
+ int remoteInit(int fd, int dd, int mm, int yy, int hh, int min, int sec);
 
 void setLX200Debug(int value)
 {
@@ -1290,6 +1292,43 @@ int setTrackFreq(int fd, double trackF)
 /**********************************************************************
 * Misc
 *********************************************************************/
+
+int remoteInit(int fd, int dd, int mm, int yy, int hh, int min, int sec)
+{
+	char temp_string[32];
+	char bool_return[2];
+	int error_type;
+	int nbytes_write=0, nbytes_read=0;
+	yy = yy % 100;
+
+	snprintf(temp_string, sizeof( temp_string ), "#:hI%02d%02d%02d%02d%02d%02d#", yy, mm, dd, hh, min, sec);
+
+	if (lx200_debug)
+		fprintf(stderr, "%s Command [%s]\n", __FUNCTION__, temp_string);
+
+	if ( (error_type = tty_write_string(fd, temp_string, &nbytes_write)) != TTY_OK)
+		return error_type;
+
+	error_type = tty_read(fd, bool_return, 1, LX200_TIMEOUT, &nbytes_read);
+	tcflush(fd, TCIFLUSH);
+
+	if (nbytes_read < 1)
+	{
+		if (lx200_debug)
+			fprintf(stderr, "%s Error reading response (%d)\n", __FUNCTION__, error_type);
+		return error_type;
+	}
+
+	bool_return[1] = '\0';
+
+	if (lx200_debug)
+		fprintf(stderr, "%s Response <%s>\n", __FUNCTION__, bool_return);
+
+	if (bool_return[0] == '0')
+		return -1;
+
+	return 0;
+}
 
 int Slew(int fd)
 {

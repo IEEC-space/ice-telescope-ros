@@ -285,6 +285,8 @@ void setLX200Debug(int value);
 void sendScopeTime(int fd);
 void sendScopeLocation(int fd);
 
+int remoteInit(int fd, int dd, int mm, int yy, int hh, int min, int sec);
+
 int timeFormat;
 int currentSiteNum;
 double targetRA, targetDEC;

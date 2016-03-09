@@ -75,6 +75,11 @@ bool MeadeTelescope::meade_action(ice_telescope::meade::Request &req, ice_telesc
     meade_input(req, "");
     meade_action_gps(res);
   }
+  else if(req.meade_action == "init")
+  {
+    meade_input(req, "");
+    meade_action_init(res);
+  }
   else if(req.meade_action == "status")
   {
     meade_input(req, "");
@@ -381,4 +386,23 @@ void MeadeTelescope::meade_action_status(ice_telescope::meade::Response &res)
   {
     meade_output(res, "Error getting telescope status", true);
   }
+}
+
+void MeadeTelescope::meade_action_init(ice_telescope::meade::Response &res)
+{
+  struct tm* pTm;
+  struct timeval tv;
+  struct timezone tz;
+
+  gettimeofday(&tv, &tz);
+  pTm = localtime(&(tv.tv_sec));
+
+  if(remoteInit(portFD, pTm->tm_mday, pTm->tm_mon + 1, pTm->tm_year + 1900, pTm->tm_hour, pTm->tm_min, pTm->tm_sec) == 0)
+  {
+    meade_output(res, "Telescope is initializing with the current date and time", false);
+  } 
+  else
+  {
+    meade_output(res, "Error initializing telescope", true);
+  }  
 }
