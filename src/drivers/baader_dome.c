@@ -43,7 +43,6 @@
 
 void dome_init_params()
 {
-	domeStatus = DOME_UNKNOWN;
 	shutterStatus = SHUTTER_UNKNOWN;
 	targetShutter = SHUTTER_CLOSE;
 }
@@ -66,7 +65,6 @@ bool dome_connect(int *in_fd)
 	if(dome_ack(portFD))
 	{
 		if(tty_debug) fprintf(stderr, "Dome is online\n");
-		domeStatus = DOME_READY;
     *in_fd = portFD;
 		return true;
 	}
@@ -78,7 +76,6 @@ bool dome_connect(int *in_fd)
 bool dome_disconnect(int portFD)
 {
 	tty_disconnect(portFD);
-	domeStatus = DOME_UNKNOWN;
 	if(tty_debug) fprintf(stderr, "Dome is offline\n");
 	return true;
 }
@@ -172,11 +169,16 @@ bool dome_shutter_status(int portFD)
 		}
 		else if (!strcmp(status, "1221") || !strcmp(status, "0220") || !strcmp(status, "1001"))
 		{
-			shutterStatus = SHUTTER_MOVING;
+      if(shutterStatus == SHUTTER_OPENED || shutterStatus == SHUTTER_CLOSING)
+        shutterStatus = SHUTTER_CLOSING;
+      else if(shutterStatus == SHUTTER_CLOSED || shutterStatus == SHUTTER_OPENING)
+        shutterStatus = SHUTTER_OPENING;
+      else
+        shutterStatus = SHUTTER_MOVING;
 		}
 		else
 		{
-			shutterStatus = SHUTTER_UNKNOWN;
+			shutterStatus = SHUTTER_MOVING;
 			if(tty_debug) fprintf(stderr, "Unknown shutter status: %s\n", resp);
 		}
 
@@ -232,7 +234,12 @@ bool dome_control_shutter(int portFD, ShutterOperation operation)
 
   	if(!strcmp(resp, "d#gotmess"))
   	{
-  		shutterStatus = SHUTTER_MOVING;
+      if(targetShutter == SHUTTER_OPEN)
+  		  shutterStatus = SHUTTER_OPENING;
+      else if(targetShutter == SHUTTER_CLOSE)
+        shutterStatus = SHUTTER_CLOSING;
+      else
+        shutterStatus = SHUTTER_MOVING;
     	return true;
   	}
   	else
@@ -248,6 +255,12 @@ const char * dome_get_shutter_status_string(ShutterStatus status)
             break;
         case SHUTTER_CLOSED:
             return "Shutter is closed";
+            break;
+        case SHUTTER_OPENING:
+            return "Shutter is opening";
+            break;
+        case SHUTTER_CLOSING:
+            return "Shutter is closing";
             break;
         case SHUTTER_MOVING:
             return "Shutter is in motion";

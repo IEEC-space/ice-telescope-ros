@@ -23,11 +23,9 @@
 
 #include <stdbool.h>
 
-typedef enum { DOME_UNKNOWN, DOME_READY } DomeStatus;
-typedef enum { SHUTTER_OPENED,  SHUTTER_CLOSED,  SHUTTER_MOVING, SHUTTER_UNKNOWN } ShutterStatus;
+typedef enum { SHUTTER_OPENED,  SHUTTER_CLOSED, SHUTTER_OPENING, SHUTTER_CLOSING, SHUTTER_MOVING, SHUTTER_UNKNOWN } ShutterStatus;
 typedef enum { SHUTTER_OPEN, SHUTTER_CLOSE } ShutterOperation;
 
-DomeStatus domeStatus;
 ShutterStatus shutterStatus;
 ShutterOperation targetShutter;
 
