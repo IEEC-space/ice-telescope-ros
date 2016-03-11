@@ -5,6 +5,8 @@ int16 object_num
 string focus_motion
 float64 lat
 float64 lon
+string motion
+int16 time_ms
 ---
 string meade_response
 bool meade_error

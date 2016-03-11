@@ -144,6 +144,13 @@ bool MeadeTelescope::meade_action(ice_telescope::meade::Request &req, ice_telesc
     meade_input(req, "");
     meade_reconnect(res);
   }
+  else if(req.meade_action == "move")
+  {
+    std::stringstream s;
+    s << "move telescope " << req.motion << " for " << req.time_ms << " ms";
+    meade_input(req, s.str());
+    meade_action_move(req, res);
+  }
   else
   {
     meade_output(res, "Invalid telescope action", true);
@@ -405,4 +412,70 @@ void MeadeTelescope::meade_action_init(ice_telescope::meade::Response &res)
   {
     meade_output(res, "Error initializing telescope", true);
   }  
+}
+
+void MeadeTelescope::meade_action_move(ice_telescope::meade::Request &req, ice_telescope::meade::Response &res)
+{
+  std::stringstream s;
+
+  if(req.motion == "north" || req.motion == "south")
+  {
+    TelescopeMotionNS dirNS;
+
+    if(req.motion == "north")
+      dirNS = MOTION_NORTH;
+    else if(req.motion == "south")
+      dirNS = MOTION_SOUTH;
+
+    if(MoveNS(portFD, dirNS, MOTION_START))
+    {
+      ROS_INFO("Moving telescope N/S");
+      usleep(req.time_ms * 1000);
+      if(MoveNS(portFD, dirNS, MOTION_STOP))
+      {
+        s << "Telescope moved " << req.motion << " for " << req.time_ms << " ms";
+        meade_output(res, s.str(), false);
+      }
+      else
+      {
+        meade_output(res, "Error stoping telescope movement N/S", true);
+      }
+    }
+    else
+    {
+      meade_output(res, "Error starting telescope movement N/S", true);
+    }
+  }
+  else if(req.motion == "east" || req.motion == "west")
+  {
+    TelescopeMotionWE dirWE;
+
+    if(req.motion == "east")
+      dirWE = MOTION_EAST;
+    else if(req.motion == "west")
+      dirWE = MOTION_WEST;
+
+    if(MoveWE(portFD, dirWE, MOTION_START))
+    {
+      ROS_INFO("Moving telescope W/E");
+      usleep(req.time_ms * 1000);
+      if(MoveWE(portFD, dirWE, MOTION_STOP))
+      {
+        s << "Telescope moved " << req.motion << " for " << req.time_ms << " ms";
+        meade_output(res, s.str(), false);
+      }
+      else
+      {
+        meade_output(res, "Error stoping telescope movement W/E", true);
+      }
+    }
+    else
+    {
+      meade_output(res, "Error starting telescope movement W/E", true);
+    }
+  }
+  else
+  {
+    meade_output(res, "Invalid movement direction. Options are north/south/east/west", true);
+  }
 }
