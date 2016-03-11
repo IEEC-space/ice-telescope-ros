@@ -151,6 +151,11 @@ bool MeadeTelescope::meade_action(ice_telescope::meade::Request &req, ice_telesc
     meade_input(req, s.str());
     meade_action_move(req, res);
   }
+  else if(req.meade_action == "sync")
+  {
+    meade_input(req, "");
+    meade_action_sync(req, res);
+  }
   else
   {
     meade_output(res, "Invalid telescope action", true);
@@ -334,6 +339,8 @@ void MeadeTelescope::meade_action_goto(ice_telescope::meade::Request &req, ice_t
   {
     meade_output(res, string(return_msg), true);
   }
+
+  free(return_msg);
 }
 
 void MeadeTelescope::meade_action_catalog(ice_telescope::meade::Request &req, ice_telescope::meade::Response &res)
@@ -477,5 +484,36 @@ void MeadeTelescope::meade_action_move(ice_telescope::meade::Request &req, ice_t
   else
   {
     meade_output(res, "Invalid movement direction. Options are north/south/east/west", true);
+  }
+}
+
+void MeadeTelescope::meade_action_sync(ice_telescope::meade::Request &req, ice_telescope::meade::Response &res)
+{
+  if((req.ra == -1000.0) && (req.dec == -1000.0))
+  {
+    char* return_msg;
+    return_msg = (char*)malloc(64*sizeof(char));
+
+    if(Sync(portFD, return_msg) == 0)
+    {
+      meade_output(res, "Telescope coordinates synced", false);
+    }
+    else
+    {
+      meade_output(res, "Error syncing telescope", true);
+    }
+
+    free(return_msg);
+  }
+  else
+  {
+    if(SyncRADEC(portFD, req.ra, req.dec))
+    {
+      meade_output(res, "Telescope coordinates synced", false);
+    }
+    else
+    {
+      meade_output(res, "Error syncing telescope", true);
+    }
   }
 }

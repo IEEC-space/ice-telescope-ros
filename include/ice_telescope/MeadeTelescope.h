@@ -49,5 +49,6 @@ protected:
   void meade_action_status(ice_telescope::meade::Response &res);
   void meade_action_init(ice_telescope::meade::Response &res);
   void meade_action_move(ice_telescope::meade::Request &req, ice_telescope::meade::Response &res);
+  void meade_action_sync(ice_telescope::meade::Request &req, ice_telescope::meade::Response &res);
 
 };

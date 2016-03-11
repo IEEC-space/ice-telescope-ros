@@ -22,7 +22,7 @@
 
 void usage_general()
 {
-  ROS_INFO("Usage: meade_client action [action arguments]. Action: init; status; park; goto; messier; star; deepsky; move; focus; gps; getobjradec; gettelradec; getdatetime; setdatetime; setlatlon; getlatlon; reconnect");
+  ROS_INFO("Usage: meade_client action [action arguments]. Action: init; status; park; goto; messier; star; deepsky; move; sync; focus; gps; getobjradec; gettelradec; getdatetime; setdatetime; setlatlon; getlatlon; reconnect");
 }
 
 void usage_goto()
@@ -53,6 +53,13 @@ void usage_move()
 {
   ROS_INFO("Usage: meade_client move direction[north/south/east/west] milliseconds");
   ROS_INFO("Example: meade_client move north 100");
+}
+
+void usage_sync()
+{
+  ROS_INFO("Usage: meade_client sync [ra dec]");
+  ROS_INFO("Example: meade_client sync");
+  ROS_INFO("Example: meade_client sync 0.73 41.36");
 }
 
 
@@ -124,6 +131,26 @@ int main(int argc, char **argv)
 
     srv.request.motion = argv[2];
     srv.request.time_ms = atoi(argv[3]);
+  }
+  else if(srv.request.meade_action == "sync")
+  {
+    if(argc != 2 || argc != 4)
+    {
+      usage_sync();
+      return 1;
+    }
+
+    if(argc == 2)
+    {
+      srv.request.ra = -1000.0;
+      srv.request.dec = -1000.0;
+    }
+
+    if(argc == 4)
+    {
+      srv.request.ra = atof(argv[2]);
+      srv.request.dec = atof(argv[3]);
+    }
   }
 
   if(client.call(srv))
