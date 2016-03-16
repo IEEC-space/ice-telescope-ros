@@ -122,6 +122,12 @@ the Meade LX200GPS Telescope.
 The **action** parameter is the command to be sent to the server. The
 **action** can be one of the following:
 
+**init**
+
+Initialize the telescope for a remote session.
+
+    rosrun ice_telescope meade_client init
+
 **goto** 
 
 Point the telescope to the specified coordinates. 
@@ -140,6 +146,25 @@ Point the telescope to the selected catalog object.
     rosrun ice_telescope meade_client deepsky objectNum
 
         -   objectNum: The catalog number for the desired object.
+
+**move**
+
+Move the telescope in a specific direction for a specific period of time.
+
+    rosrun ice_telescope meade_client move dir(north/south/east/west) milliseconds
+
+        -   dir: the desired movement direction. The possible directions are: north, south, east, west.
+        -   milliseconds: the duration of the movement as a four-digit number (0-9999).
+
+**sync**
+
+Synchronize the telescope coordinates with the current ones.
+
+    rosrun ice_telescope meade_client sync
+    rosrun ice_telescope meade_client sync ra dec
+
+        -   ra: Right ascension as a double value.
+        -   dec: Declination as a double value.
 
 **park**
 

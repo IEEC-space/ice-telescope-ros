@@ -145,6 +145,10 @@ The telescope client issues the user's desired actions to perform with the Meade
 The \Arg{action} parameter is the command to be sent to the server. The \Arg{action} can be one of the following:
 
 \begin{Description}[\Arg{getdatetime}]\setlength{\itemsep}{0cm}
+\item[\Arg{init}] Initialize the telescope for a remote session.
+
+	\Prog{rosrun} \Prog{ice\_telescope} \Prog{meade\_client} \Arg{init}
+
 \item[\Arg{goto}] Point the telescope to the specified coordinates.
 
 	\Prog{rosrun} \Prog{ice\_telescope} \Prog{meade\_client} \Arg{goto} \Arg{ra} \Arg{dec}
@@ -164,6 +168,26 @@ The \Arg{action} parameter is the command to be sent to the server. The \Arg{act
 	
 	\begin{itemize}
 		\item \Opt{objectNum} The catalog number for the desired object.
+	\end{itemize}
+
+\item[\Arg{move}] Move the telescope in a specific direction for a specific period of time.
+
+	\Prog{rosrun} \Prog{ice\_telescope} \Prog{meade\_client} \Arg{move} \Arg{dir(north/south/east/west)} \Arg{milliseconds}
+
+	\begin{itemize}
+		\item \Opt{dir} the desired movement direction. The possible directions are: north, south, east, west.
+		\item \Opt{milliseconds} the duration of the movement as a four-digit number (0-9999).
+	\end{itemize}
+
+\item[\Arg{sync}] Synchronize the telescope coordinates with the current ones.
+
+	\Prog{rosrun} \Prog{ice\_telescope} \Prog{meade\_client} \Arg{sync}
+
+	\Prog{rosrun} \Prog{ice\_telescope} \Prog{meade\_client} \Arg{sync} \Arg{ra} \Arg{dec}
+
+	\begin{itemize}
+		\item \Opt{ra} Right ascension as a double value.
+		\item \Opt{dec} Declination as a double value.
 	\end{itemize}
 
 \item[\Arg{park}] Slew the telescope to the parked position. \textbf{Note:} after parking, a power cycle is required.
