@@ -468,7 +468,8 @@ License and Copyright
 ---------------------
 
     ICE Telescope ROS Package
-    Copyright (C) 2015 Biel Artigues Aguilo <artigues@ice.cat>
+    Copyright (C) IEEC 2020
+    Author: Biel Artigues Aguilo <artigues@ice.cat>
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
