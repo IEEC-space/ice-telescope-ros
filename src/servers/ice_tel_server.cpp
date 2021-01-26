@@ -1,6 +1,6 @@
 /*
     ICE Telescope ROS Package: Full Server (dome, telescope, ccd)
-    Copyright (C) IEEC 2020
+    Copyright (C) IEEC 2021
     Author: Biel Artigues Aguilo
 
     This program is free software: you can redistribute it and/or modify
