@@ -1,6 +1,7 @@
 /*
     ICE Telescope ROS Package: SNMP common routines
-    Copyright (C) 2015 Biel Artigues Aguilo
+    Copyright (C) IEEC 2021
+    Author: Biel Artigues Aguilo
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
