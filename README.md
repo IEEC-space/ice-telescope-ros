@@ -5,6 +5,7 @@ ROS-TELESCOPE: ICE Telescope - A ROS package
 telescope system at the ICE building in the UAB Campus. The full system
 is composed of a Meade LX200GPS telescope, a SBIG ST-7 CCD camera, a
 Baader Planetarium dome, an APC Switched PDU and a Vaisala weather station.
+The work shown here was originally published in [Vilardell et al., "Using Robotic Operating System (ROS) to control autonomous observatories", Proc. SPIE 9913, Software and Cyberinfrastructure for Astronomy IV, 99132V (26 July 2016)](https://doi.org/10.1117/12.2232694).
 
 ### Table of Contents
 
@@ -22,7 +23,7 @@ Baader Planetarium dome, an APC Switched PDU and a Vaisala weather station.
 -   [Changes](#changes)
 -   [Version](#version)
 -   [License and Copyright](#license-and-copyright)
--   [Author](#author)
+-   [Authors](#authors)
 
 Synopsis
 --------
@@ -484,11 +485,11 @@ License and Copyright
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-Author
+Authors
 ------
 
-Biel Artigues Aguilo
+Biel Artigues Aguilo, Francesc Vilardell Sallés
 
-Email: [`github@ice.csic.es`](mailto:github@ice.csic.es)
+IEEC website: http://www.ieec.cat/
 
-Web: [`http://www.ice.csic.es/`](http://www.ice.csic.es/)
+ICE telescope website: https://www.ice.csic.es/en/content/85/astroearth-laboratory
