@@ -4,12 +4,12 @@
   <version>0.1.3</version>
   <description>The ICE Telescope ROS package</description>
 
-  <maintainer email="github@ice.csic.es">Biel Artigues Aguilo</maintainer>
+  <maintainer email="github@ieec.cat">Francesc Vilardell Sallés</maintainer>
   <license>GPLv3</license>
-  <url type="website">http://www.ice.csic.es</url>
+  <url type="website">https://www.ice.csic.es/en/content/85/astroearth-laboratory</url>
   <!-- <url type="website">http://wiki.ros.org/ice_telescope</url> -->
 
-  <author email="github@ice.csic.es">Biel Artigues Aguilo</author>
+  <author email="github@ieec.cat">Biel Artigues Aguilo</author>
 
   <buildtool_depend>catkin</buildtool_depend>
 
