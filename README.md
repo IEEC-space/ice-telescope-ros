@@ -7,6 +7,8 @@ is composed of a Meade LX200GPS telescope, a SBIG ST-7 CCD camera, a
 Baader Planetarium dome, an APC Switched PDU and a Vaisala weather station.
 The work shown here was originally published in [Vilardell et al., "Using Robotic Operating System (ROS) to control autonomous observatories", Proc. SPIE 9913, Software and Cyberinfrastructure for Astronomy IV, 99132V (26 July 2016)](https://doi.org/10.1117/12.2232694).
 
+[![Using ROS to control an observatory demo](https://user-images.githubusercontent.com/22243223/149656654-004ae4ca-e41e-4bab-8fbd-a0588bc954c3.png)](https://youtu.be/R92qWKE9lYU)
+
 ### Table of Contents
 
 -   [Synopsis](#synopsis)
