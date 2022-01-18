@@ -494,4 +494,4 @@ Biel Artigues Aguilo, Francesc Vilardell Sallés
 
 IEEC website: http://www.ieec.cat/
 
-ICE telescope website: https://www.ice.csic.es/en/content/85/astroearth-laboratory
+ICE telescope website: https://dev.ice.csic.es/en/content/85/astroearth-laboratory
