@@ -9,6 +9,8 @@ The work shown here was originally published in [Vilardell et al., "Using Roboti
 
 [![Using ROS to control an observatory demo](https://user-images.githubusercontent.com/22243223/149656654-004ae4ca-e41e-4bab-8fbd-a0588bc954c3.png)](https://youtu.be/R92qWKE9lYU)
 
+Demo at: https://youtu.be/R92qWKE9lYU
+
 ### Table of Contents
 
 -   [Synopsis](#synopsis)
